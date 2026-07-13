@@ -8,15 +8,15 @@ backends in ``[all]`` installs.
 from __future__ import annotations
 
 import pytest
+
+from mnema.config import MnemaConfig
+from mnema.service import MemoryService
 from tests.fakes import (
     HashingEmbedding,
     skip_no_chroma,
     skip_no_qdrant,
     skip_no_sqlite_vec,
 )
-
-from mnema.config import MnemaConfig
-from mnema.service import MemoryService
 
 pytestmark = pytest.mark.asyncio
 
