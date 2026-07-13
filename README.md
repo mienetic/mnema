@@ -27,94 +27,89 @@
 
 ## 🚀 Quick start
 
-### 1. Install
+### One-line install (recommended)
 
 ```bash
-# Default: Chroma backend + local embeddings (offline)
-pip install 'mnema-mcp[default]'
-
-# Or everything (all backends + providers)
-pip install 'mnema-mcp[all]'
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh | bash
 ```
 
-Or with [`uv`](https://docs.astral.sh/uv/):
+That's it. The installer:
+1. Installs [`uv`](https://docs.astral.sh/uv/) (no pip / no virtualenv wrangling).
+2. Clones Mnema from GitHub.
+3. Creates an isolated Python 3.11 environment with all dependencies.
+4. Installs the `mnema` and `mnema-update` commands.
+5. Runs `mnema --doctor` to verify.
+
+> 🇹🇭 **New to this?** See [GETTING_STARTED.md](GETTING_STARTED.md) — step-by-step guide (in Thai).
+
+### Verify & update
 
 ```bash
-uv pip install 'mnema-mcp[default]'
+mnema --doctor          # check backend + embedding loaded
+mnema                   # run the MCP server (stdio, for clients)
+mnema-update            # git pull + reinstall + verify (run this to upgrade)
 ```
 
-### 2. Run the server
+### Manual / from source
 
 ```bash
-mnema                      # stdio transport (for MCP clients)
-mnema --transport http     # streamable HTTP (remote / multi-client)
-mnema --doctor             # check config + backend/embedding availability
+git clone https://github.com/mienetic/mnema
+cd mnema/packages/mnema-python
+uv venv --python 3.11 .venv
+VIRTUAL_ENV=.venv uv pip install -e '.[default]'
+.venv/bin/mnema --doctor
 ```
 
-### 3. Wire it into your AI client
+### Wire it into your AI client
 
 <details>
-<summary><b>Claude Desktop</b> — <code>claude_desktop_config.json</code></summary>
+<summary><b>Claude Desktop</b></summary>
+
+Open `claude_desktop_config.json` and add:
 
 ```json
 {
   "mcpServers": {
     "mnema": {
-      "command": "uvx",
-      "args": ["mnema-mcp"],
+      "command": "mnema",
       "env": {
         "MNEMA_BACKEND": "chroma",
-        "MNEMA_BACKEND_PATH": "~/.mnema/data",
+        "MNEMA_BACKEND_PATH": "~/.mnema-data",
         "MNEMA_DEFAULT_SCOPE": "user:me"
       }
     }
   }
 }
 ```
+Restart Claude Desktop, then tell Claude: *"Remember that I prefer dark mode."* — it'll persist across sessions.
 </details>
 
 <details>
-<summary><b>ZCode</b> — MCP config</summary>
+<summary><b>ZCode</b></summary>
 
 ```json
 {
   "mcpServers": {
-    "mnema": {
-      "command": "uvx",
-      "args": ["mnema-mcp"],
-      "env": { "MNEMA_BACKEND": "chroma" }
-    }
+    "mnema": { "command": "mnema" }
   }
 }
 ```
 </details>
 
 <details>
-<summary><b>Cursor</b> — <code>mcp.json</code></summary>
+<summary><b>Cursor</b></summary>
 
+`~/.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "mnema": {
-      "command": "uvx",
-      "args": ["mnema-mcp"]
-    }
+    "mnema": { "command": "mnema" }
   }
 }
 ```
 </details>
 
-### 4. Try it
-
-In your AI client:
-
-> "Remember that I prefer dark mode and use a Dvorak keyboard layout."
-
-Then in a future session:
-
-> "What do you know about my preferences?"
-
-The agent stores the first message via `mnema_remember` and recalls it via `mnema_search` — across sessions, across conversations.
+See [`examples/`](examples/) for ready-to-copy configs.
 
 ---
 
@@ -232,7 +227,7 @@ export MNEMA_OPENAI_API_KEY=sk-...
 ## 🧪 Development
 
 ```bash
-git clone https://github.com/your-org/mnema.git
+git clone https://github.com/mienetic/mnema.git
 cd mnema/packages/mnema-python
 
 # Install with dev deps + all backends

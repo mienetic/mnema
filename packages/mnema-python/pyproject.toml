@@ -71,11 +71,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/mnema"
-Repository = "https://github.com/your-org/mnema"
-Documentation = "https://github.com/your-org/mnema#readme"
-Issues = "https://github.com/your-org/mnema/issues"
-Changelog = "https://github.com/your-org/mnema/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/mienetic/mnema"
+Repository = "https://github.com/mienetic/mnema"
+Documentation = "https://github.com/mienetic/mnema#readme"
+Issues = "https://github.com/mienetic/mnema/issues"
+Changelog = "https://github.com/mienetic/mnema/blob/main/CHANGELOG.md"
 
 [project.scripts]
 mnema = "mnema.__main__:main"

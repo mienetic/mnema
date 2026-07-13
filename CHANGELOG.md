@@ -39,5 +39,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Test suite with in-memory fakes + a backend matrix that runs against
   every supported store.
 
-[Unreleased]: https://github.com/your-org/mnema/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/your-org/mnema/releases/tag/v0.1.0
+[Unreleased]: https://github.com/mienetic/mnema/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/mienetic/mnema/releases/tag/v0.1.0

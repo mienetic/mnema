@@ -15,7 +15,7 @@ apply.
 ## Getting set up
 
 ```bash
-git clone https://github.com/your-org/mnema.git
+git clone https://github.com/mienetic/mnema.git
 cd mnema/packages/mnema-python
 
 # Install with all optional deps + dev tooling
