@@ -8,19 +8,22 @@ from pathlib import Path
 # Make `import mnema` work when running from the source tree without install.
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+TESTS = ROOT / "tests"
+for path in (SRC, ROOT):
+    p = str(path)
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 import pytest  # noqa: E402
+
+from mnema.backends.base import VectorBackend  # noqa: E402
+from mnema.config import MnemaConfig  # noqa: E402
+from mnema.embeddings.base import EmbeddingProvider  # noqa: E402
 from tests.fakes import (  # noqa: E402
     HashingEmbedding,
     InMemoryBackend,
     make_service,
 )
-
-from mnema.backends.base import VectorBackend  # noqa: E402
-from mnema.config import MnemaConfig  # noqa: E402
-from mnema.embeddings.base import EmbeddingProvider  # noqa: E402
 
 
 @pytest.fixture

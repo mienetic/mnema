@@ -26,25 +26,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: packages/mnema-python/pyproject.toml
 
       - name: Install uv
         run: pip install uv
 
+      - name: Create venv
+        run: uv venv --python ${{ matrix.python-version }} .venv
+
       - name: Install package (all backends + dev)
-        run: |
-          uv pip install --system -e '.[all,dev]'
+        run: VIRTUAL_ENV=.venv uv pip install -e '.[all,dev]'
 
       - name: Lint (ruff)
-        run: ruff check .
+        run: .venv/bin/ruff check src/ tests/
 
       - name: Type-check (mypy)
-        run: mypy src/mnema
+        run: .venv/bin/mypy src/mnema
         continue-on-error: true  # mypy strict can be noisy; tighten over time
 
       - name: Run tests
-        run: pytest -v --cov=mnema --cov-report=term-missing
+        run: .venv/bin/pytest -v --cov=mnema --cov-report=term-missing
 
       - name: Upload coverage
         if: matrix.python-version == '3.11'

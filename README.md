@@ -86,30 +86,168 @@ VIRTUAL_ENV=.venv uv pip install -e '.[default]'
 
 ### Wire it into your AI client
 
+Pick your client below. **Each example assumes Mnema is already installed**
+(`mnema` is on your `PATH` after running the installer).
+
 <details>
-<summary><b>Claude Desktop</b></summary>
+<summary><b>Claude Desktop</b> (Anthropic's desktop app)</summary>
 
-Open `claude_desktop_config.json` and add:
+1. Find or create the config file:
+   - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+     *(in Finder, press `Cmd+Shift+G` and paste the path)*
+   - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+2. Paste this into the file (merge with existing `mcpServers` if present):
 
-```json
-{
-  "mcpServers": {
-    "mnema": {
-      "command": "mnema",
-      "env": {
-        "MNEMA_BACKEND": "chroma",
-        "MNEMA_BACKEND_PATH": "~/.mnema-data",
-        "MNEMA_DEFAULT_SCOPE": "user:me"
-      }
-    }
-  }
-}
-```
-Restart Claude Desktop, then tell Claude: *"Remember that I prefer dark mode."* — it'll persist across sessions.
+   ```json
+   {
+     "mcpServers": {
+       "mnema": {
+         "command": "mnema",
+         "env": {
+           "MNEMA_BACKEND": "chroma",
+           "MNEMA_BACKEND_PATH": "~/.mnema-data",
+           "MNEMA_DEFAULT_SCOPE": "user:me"
+         }
+       }
+     }
+   }
+   ```
+3. **Fully quit Claude Desktop** (menu → Quit, not just close the window) and reopen it.
+4. Verify: click the **🔌 plug icon** in the chat — `mnema` should appear in the list.
+5. Try: *"Remember that I prefer dark mode."* then, in a new chat, *"What do you know about my preferences?"*
+
 </details>
 
 <details>
-<summary><b>ZCode</b></summary>
+<summary><b>Claude Code</b> (the <code>claude</code> CLI)</summary>
+
+1. From your project root, add the server:
+   ```bash
+   claude mcp add mnema mnema
+   ```
+   Or add it to `~/.claude.json` (user scope) directly:
+
+   ```json
+   {
+     "mcpServers": {
+       "mnema": {
+         "command": "mnema",
+         "env": { "MNEMA_DEFAULT_SCOPE": "user:me" }
+       }
+     }
+   }
+   ```
+2. Start `claude` and run `/mcp` to confirm `mnema` is connected.
+3. Tools are available automatically — try *"remember that this project uses Postgres"*.
+
+</details>
+
+<details>
+<summary><b>Cursor</b> (the AI code editor)</summary>
+
+1. Create `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project-level):
+   ```json
+   {
+     "mcpServers": {
+       "mnema": {
+         "command": "mnema",
+         "env": {
+           "MNEMA_BACKEND": "chroma",
+           "MNEMA_BACKEND_PATH": "~/.mnema-data",
+           "MNEMA_DEFAULT_SCOPE": "project:current"
+         }
+       }
+     }
+   }
+   ```
+2. Open Cursor → **Settings → MCP** (or reload the window: `Cmd+Shift+P` → "Reload Window").
+3. `mnema` should show a green dot. If red, check the path with `which mnema`.
+4. Use it in chat: *"search my memory for past decisions about the auth module."*
+
+</details>
+
+<details>
+<summary><b>Zed</b> (the editor)</summary>
+
+1. Open `~/.config/zed/settings.json` (macOS) and add under `context_servers`:
+   ```json
+   {
+     "context_servers": {
+       "mnema": {
+         "command": { "path": "mnema" },
+         "env": { "MNEMA_DEFAULT_SCOPE": "user:me" }
+       }
+     }
+   }
+   ```
+2. Restart Zed, then enable the server in Assistant panel settings.
+3. In the Assistant, tag `@mnema` to pull memory context into the conversation.
+
+</details>
+
+<details>
+<summary><b>Cline</b> (VS Code extension)</summary>
+
+1. Open the Cline sidebar → **MCP** icon → **"Edit MCP Settings"**.
+2. Add the entry to `cline_mcp_settings.json`:
+   ```json
+   {
+     "mcpServers": {
+       "mnema": {
+         "command": "mnema",
+         "env": { "MNEMA_DEFAULT_SCOPE": "workspace" },
+         "disabled": false,
+         "alwaysAllow": []
+       }
+     }
+   }
+   ```
+3. Cline auto-detects the change — no restart needed.
+4. Ask Cline: *"search memory for anything I decided about testing strategy."*
+
+</details>
+
+<details>
+<summary><b>Continue.dev</b> (VS Code / JetBrains)</summary>
+
+1. Open `~/.continue/config.json` and add under `experimental.modelContextProtocolServers`:
+   ```json
+   {
+     "experimental": {
+       "modelContextProtocolServers": [
+         {
+           "transport": { "type": "stdio", "command": "mnema" }
+         }
+       ]
+     }
+   }
+   ```
+2. Reload the window (`Cmd+Shift+P` → "Reload Window").
+3. Use `@mnema` in the Continue chat to scope memory tools.
+
+</details>
+
+<details>
+<summary><b>Windsurf</b> (Codeium's editor)</summary>
+
+1. Open **Settings → MCP Servers** → **"Add Server"** (or edit `~/.codeium/windsurf/mcp_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "mnema": { "command": "mnema" }
+     }
+   }
+   ```
+2. Click **Refresh** on the MCP panel — `mnema` should turn active.
+3. Use Cascade with `@mnema` to recall project context.
+
+</details>
+
+<details>
+<summary><b>Any other MCP client</b> (generic)</summary>
+
+Mnema is a standard **stdio** MCP server. Any client that supports the
+[Model Context Protocol](https://modelcontextprotocol.io) can launch it:
 
 ```json
 {
@@ -118,22 +256,17 @@ Restart Claude Desktop, then tell Claude: *"Remember that I prefer dark mode."* 
   }
 }
 ```
-</details>
 
-<details>
-<summary><b>Cursor</b></summary>
+For **remote / multi-client** setups, run Mnema over streamable HTTP:
 
-`~/.cursor/mcp.json`:
-```json
-{
-  "mcpServers": {
-    "mnema": { "command": "mnema" }
-  }
-}
+```bash
+mnema --transport http --host 127.0.0.1 --port 8000
+# then point clients at http://127.0.0.1:8000/mcp
 ```
+
 </details>
 
-See [`examples/`](examples/) for ready-to-copy configs.
+Ready-to-copy configs for all clients are in [`examples/`](examples/).
 
 ---
 

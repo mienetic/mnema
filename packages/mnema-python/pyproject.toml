@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "mnema-mcp"
 version = "0.1.0"
 description = "Mnema — Long-term memory for AI via MCP × Vector DB. Solves the context-window problem with pluggable vector backends, semantic + hybrid search, decay scoring, and summarization."
-readme = "../../README.md"
+readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{ name = "Mnema Contributors" }]
@@ -91,7 +91,7 @@ mnema-server = "mnema.__main__:main"
 packages = ["src/mnema"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/mnema"]
+include = ["src/mnema", "README.md"]
 
 [tool.ruff]
 line-length = 100
@@ -118,6 +118,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["src", "."]
 addopts = "-ra --strict-markers"
 markers = [
     "chroma: tests that exercise the Chroma backend",
