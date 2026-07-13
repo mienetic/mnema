@@ -1,0 +1,41 @@
+# docker compose -f docker/docker-compose.yml up
+#
+# Runs Mnema as a streamable-HTTP MCP server on http://localhost:8000/mcp
+# with a persistent volume for the embedded Chroma store.
+
+services:
+  mnema:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: mnema-mcp:latest
+    container_name: mnema
+    ports:
+      - "8000:8000"
+    environment:
+      MNEMA_BACKEND: chroma
+      MNEMA_BACKEND_PATH: /data/mnema
+      MNEMA_EMBEDDING: local
+      MNEMA_EMBEDDING_MODEL: all-MiniLM-L6-v2
+      MNEMA_DEFAULT_SCOPE: global
+      MNEMA_TRANSPORT: http
+      MNEMA_HTTP_HOST: 0.0.0.0
+      MNEMA_HTTP_PORT: 8000
+    volumes:
+      - mnema-data:/data
+    restart: unless-stopped
+
+  # Optional: a server-mode Qdrant for production-like testing.
+  # Uncomment to use MNEMA_BACKEND=qdrant + MNEMA_BACKEND_PATH=http://qdrant:6333
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   container_name: qdrant
+  #   ports:
+  #     - "6333:6333"
+  #   volumes:
+  #     - qdrant-data:/qdrant/storage
+  #   restart: unless-stopped
+
+volumes:
+  mnema-data:
+  # qdrant-data:

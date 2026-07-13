@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Mnema evaluation set.
+
+  These 10 questions exercise the full memory workflow through MCP tools.
+  They are independent (each can be answered from a fresh store), read-only
+  (no destructive ops needed to verify), and designed to require multiple
+  tool calls + deep exploration.
+
+  Run with the MCP evaluation harness after seeding the demo memories via
+  `python examples/demo_memories.py`.
+-->
+<evaluation>
+  <qa_pair>
+    <question>Using mnema_search, find what Alice likes to drink and report the memory id of the top result.</question>
+    <answer>any id from the user:alice scope whose text mentions tea</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>What scopes exist in the store, and how many memories are in each? Report the answer as JSON.</question>
+    <answer>{"user:alice": 1, "project:web": 1, "user:bob": 1}</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Recall the deployment region for the web project using mnema_recall. Which region is it?</question>
+    <answer>sin</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>After running mnema_stats, what is the configured embedding dimension?</question>
+    <answer>384</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use mnema_search with tags=["deploy"]. Which memory has the highest keyword_score?</question>
+    <answer>the project:web fly.io memory</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>What is Bob's timezone? Recall it via mnema_recall in the user:bob scope.</question>
+    <answer>Asia/Bangkok</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Run mnema_apply_decay in dry_run mode with threshold 0.5. How many candidates are reported in candidate_count?</question>
+    <answer>0</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Fetch the resource mnema://scope/user:alice/summary. How many memories does it report?</question>
+    <answer>1</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call mnema_summarize for scope project:web. How many clusters does the plan contain?</question>
+    <answer>1</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Recall "coffee" in the user:alice scope. What is the score of the top result?</question>
+    <answer>any float in [0, 1]</answer>
+  </qa_pair>
+</evaluation>

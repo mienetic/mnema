@@ -1,0 +1,16 @@
+{
+  "_comment": "Claude Desktop config — add to ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or %APPDATA%\\Claude\\claude_desktop_config.json (Windows)",
+  "mcpServers": {
+    "mnema": {
+      "command": "uvx",
+      "args": ["mnema-mcp"],
+      "env": {
+        "MNEMA_BACKEND": "chroma",
+        "MNEMA_BACKEND_PATH": "~/.mnema/claude",
+        "MNEMA_EMBEDDING": "local",
+        "MNEMA_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
+        "MNEMA_DEFAULT_SCOPE": "user:me"
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "_comment": "Cursor mcp.json — place at ~/.cursor/mcp.json (global) or .cursor/mcp.json (project).",
+  "mcpServers": {
+    "mnema": {
+      "command": "uvx",
+      "args": ["mnema-mcp"],
+      "env": {
+        "MNEMA_BACKEND": "chroma",
+        "MNEMA_BACKEND_PATH": "~/.mnema/cursor",
+        "MNEMA_EMBEDDING": "local",
+        "MNEMA_DEFAULT_SCOPE": "project:current"
+      }
+    }
+  }
+}

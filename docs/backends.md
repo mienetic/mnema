@@ -1,0 +1,110 @@
+# Vector backends
+
+Mnema ships three pluggable backends. Pick one based on your scale and
+operational preferences — they all implement the same `VectorBackend`
+interface.
+
+| Backend | Embedded? | Extra dep | Default dim | Persistence | Best for |
+|---|---|---|---|---|---|
+| **Chroma** | ✅ in-process | `chromadb` | 384 | local dir | default, dev, single-user |
+| **Qdrant** | ✅ local path / `:memory:` / remote | `qdrant-client` | 384 | local or remote | production, high scale |
+| **sqlite-vec** | ✅ pure SQLite | `sqlite-vec` | 384 | SQLite file | smallest footprint |
+
+## Selecting a backend
+
+```bash
+# Via env
+export MNEMA_BACKEND=qdrant
+
+# Via .env
+echo "MNEMA_BACKEND=sqlite_vec" >> .env
+```
+
+Or override per-invocation when constructing the service programmatically
+(see `examples/demo_memories.py`).
+
+---
+
+## Chroma (default)
+
+**Embedded, persistent, zero-config.**
+
+```bash
+pip install 'mnema-mcp[chroma]'   # included in [default]
+MNEMA_BACKEND=chroma
+MNEMA_BACKEND_PATH=~/.mnema/data
+```
+
+- Runs in-process via `chromadb.PersistentClient`. No server to start.
+- Persists to `MNEMA_BACKEND_PATH` as SQLite + parquet.
+- To use a **remote** Chroma server, set `MNEMA_BACKEND_PATH=http://host:8000`.
+- Cosine similarity (`hnsw:space=cosine`).
+
+## Qdrant
+
+**Embedded local, in-memory, or remote — production grade.**
+
+```bash
+pip install 'mnema-mcp[qdrant]'
+```
+
+Three modes selected by `MNEMA_BACKEND_PATH`:
+
+| `MNEMA_BACKEND_PATH` | Mode | Use case |
+|---|---|---|
+| `:memory:` | in-process, ephemeral | tests, throwaway |
+| `./qdrant-data` | local disk | single-node prod |
+| `http://localhost:6333` | remote server | scaled, Dockerized |
+
+The backend auto-creates the collection on first use and builds payload
+indexes on `scope` and `tags` for fast filtering.
+
+## sqlite-vec
+
+**Pure SQLite + the sqlite-vec loadable extension. Smallest possible footprint.**
+
+```bash
+pip install 'mnema-mcp[sqlite_vec]'
+MNEMA_BACKEND=sqlite_vec
+MNEMA_BACKEND_PATH=~/.mnema/mnema.db
+```
+
+- Loads `sqlite-vec` into a standard `sqlite3` connection.
+- Stores vectors in a `vec0` virtual table; metadata in a normal table.
+- Great for constrained environments (lambdas, edge, single-binary distros).
+
+---
+
+## Adding your own backend
+
+1. Create `src/mnema/backends/yourbackend.py`:
+
+   ```python
+   from mnema.backends.base import VectorBackend, BackendHit, BackendQuery
+   from mnema.config import MnemaConfig
+   from mnema.models import MemoryRecord
+
+   class YourBackend(VectorBackend):
+       name = "yourbackend"
+
+       def __init__(self, config: MnemaConfig) -> None:
+           ...
+
+       async def add(self, record, embedding): ...
+       async def get(self, memory_id): ...
+       async def update(self, memory_id, *, text, tags, importance, metadata, embedding): ...
+       async def delete(self, memory_id): ...
+       async def delete_by_scope(self, scope): ...
+       async def search(self, query: BackendQuery) -> list[BackendHit]: ...
+       async def count(self, scope=None): ...
+       async def list_scopes(self): ...
+       async def iter_all(self, scope=None): ...
+       async def touch(self, memory_id): ...   # optional but recommended
+   ```
+
+2. Register it in `backends/__init__.py::make_backend`.
+3. Add an optional dependency in `pyproject.toml`.
+4. Add a test class in `tests/test_backends.py`.
+5. Update the README and this doc.
+
+See `CONTRIBUTING.md` for the full checklist.

@@ -1,0 +1,128 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mnema-mcp"
+version = "0.1.0"
+description = "Mnema — Long-term memory for AI via MCP × Vector DB. Solves the context-window problem with pluggable vector backends, semantic + hybrid search, decay scoring, and summarization."
+readme = "../../README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Mnema Contributors" }]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "vector-database",
+    "memory",
+    "llm",
+    "ai-memory",
+    "rag",
+    "chromadb",
+    "qdrant",
+    "semantic-search",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+dependencies = [
+    "mcp>=1.2,<2",
+    "pydantic>=2.5",
+    "pydantic-settings>=2.0",
+    "httpx>=0.25",
+    "anyio>=4.0",
+]
+
+[project.optional-dependencies]
+# Default vector backend (embedded, persistent).
+chroma = ["chromadb>=0.5"]
+# Alternative production-grade backend.
+qdrant = ["qdrant-client>=1.9"]
+# Pure-SQLite zero-dependency backend.
+sqlite_vec = ["sqlite-vec>=0.1.6"]
+# Local offline embeddings (default).
+local = ["sentence-transformers>=2.7"]
+# OpenAI embeddings (optional).
+openai = ["openai>=1.40"]
+# Everything most users will want (minus heavy extras).
+default = [
+    "mnema-mcp[chroma,local]",
+]
+# All backends + embedding providers.
+all = [
+    "mnema-mcp[chroma,qdrant,sqlite_vec,local,openai]",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-org/mnema"
+Repository = "https://github.com/your-org/mnema"
+Documentation = "https://github.com/your-org/mnema#readme"
+Issues = "https://github.com/your-org/mnema/issues"
+Changelog = "https://github.com/your-org/mnema/blob/main/CHANGELOG.md"
+
+[project.scripts]
+mnema = "mnema.__main__:main"
+mnema-server = "mnema.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mnema"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/mnema"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501", "N802", "N806", "N818"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "B017"]
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["chromadb.*", "qdrant_client.*", "sqlite_vec.*", "sentence_transformers.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "chroma: tests that exercise the Chroma backend",
+    "qdrant: tests that exercise the Qdrant backend",
+    "sqlite_vec: tests that exercise the sqlite-vec backend",
+    "openai: tests that require an OpenAI API key",
+]
+
+[tool.coverage.run]
+source = ["mnema"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "raise NotImplementedError"]

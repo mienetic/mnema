@@ -1,0 +1,54 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    defaults:
+      run:
+        working-directory: packages/mnema-python
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: packages/mnema-python/pyproject.toml
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install package (all backends + dev)
+        run: |
+          uv pip install --system -e '.[all,dev]'
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Type-check (mypy)
+        run: mypy src/mnema
+        continue-on-error: true  # mypy strict can be noisy; tighten over time
+
+      - name: Run tests
+        run: pytest -v --cov=mnema --cov-report=term-missing
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: packages/mnema-python/.coverage
