@@ -6,7 +6,8 @@ trade a little recall for big storage savings.
 
 Install with::
 
-    pip install 'mnema-mcp[openai]'
+    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \\
+      | MNEMA_EXTRAS='chroma,openai' bash
 
 Configure with::
 
@@ -40,8 +41,10 @@ class OpenAIEmbeddingProvider(EmbeddingProvider):
             from openai import AsyncOpenAI
         except ImportError as exc:  # pragma: no cover - guarded by factory
             raise BackendInitError(
-                "openai is not installed. Install with: "
-                "pip install 'mnema-mcp[openai]'"
+                "openai is not installed. Reinstall Mnema with the 'openai' "
+                "extra:\n"
+                "    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+                "| MNEMA_EXTRAS='chroma,openai' bash"
             ) from exc
 
         if not config.openai_api_key:

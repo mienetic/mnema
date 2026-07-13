@@ -1,12 +1,11 @@
 {
-  "_comment": "ZCode MCP config — add the mnema server to your MCP servers list. Backend defaults to embedded Chroma (offline).",
+  "_comment": "ZCode MCP config — install Mnema first via: curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh | bash. Then add the mnema server to your MCP servers list. Backend defaults to embedded Chroma (offline).",
   "mcpServers": {
     "mnema": {
-      "command": "uvx",
-      "args": ["mnema-mcp"],
+      "command": "mnema",
       "env": {
         "MNEMA_BACKEND": "chroma",
-        "MNEMA_BACKEND_PATH": "~/.mnema/zcode",
+        "MNEMA_BACKEND_PATH": "~/.mnema-data",
         "MNEMA_EMBEDDING": "local",
         "MNEMA_DEFAULT_SCOPE": "user:me"
       }

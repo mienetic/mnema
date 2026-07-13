@@ -1,12 +1,11 @@
 {
-  "_comment": "Cursor mcp.json — place at ~/.cursor/mcp.json (global) or .cursor/mcp.json (project).",
+  "_comment": "Cursor mcp.json — place at ~/.cursor/mcp.json (global) or .cursor/mcp.json (project). Install Mnema first via: curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh | bash",
   "mcpServers": {
     "mnema": {
-      "command": "uvx",
-      "args": ["mnema-mcp"],
+      "command": "mnema",
       "env": {
         "MNEMA_BACKEND": "chroma",
-        "MNEMA_BACKEND_PATH": "~/.mnema/cursor",
+        "MNEMA_BACKEND_PATH": "~/.mnema-data",
         "MNEMA_EMBEDDING": "local",
         "MNEMA_DEFAULT_SCOPE": "project:current"
       }

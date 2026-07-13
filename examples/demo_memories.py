@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Demo: seed Mnema with a few memories, then search them.
 
-Run after `pip install 'mnema-mcp[default]'` — exercises the programmatic
-SDK without needing an MCP client.
+Run after installing Mnema (e.g. via the one-line installer — see README) —
+exercises the programmatic SDK without needing an MCP client.
 
     python examples/demo_memories.py
 """

@@ -54,13 +54,18 @@ sqlite_vec = ["sqlite-vec>=0.1.6"]
 local = ["sentence-transformers>=2.7"]
 # OpenAI embeddings (optional).
 openai = ["openai>=1.40"]
-# Everything most users will want (minus heavy extras).
+# Everything most users will want (Chroma backend + local embeddings).
 default = [
-    "mnema-mcp[chroma,local]",
+    "chromadb>=0.5",
+    "sentence-transformers>=2.7",
 ]
 # All backends + embedding providers.
 all = [
-    "mnema-mcp[chroma,qdrant,sqlite_vec,local,openai]",
+    "chromadb>=0.5",
+    "qdrant-client>=1.9",
+    "sqlite-vec>=0.1.6",
+    "sentence-transformers>=2.7",
+    "openai>=1.40",
 ]
 dev = [
     "pytest>=8.0",
@@ -76,6 +81,7 @@ Repository = "https://github.com/mienetic/mnema"
 Documentation = "https://github.com/mienetic/mnema#readme"
 Issues = "https://github.com/mienetic/mnema/issues"
 Changelog = "https://github.com/mienetic/mnema/blob/main/CHANGELOG.md"
+Install = "https://github.com/mienetic/mnema#getting-started"
 
 [project.scripts]
 mnema = "mnema.__main__:main"

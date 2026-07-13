@@ -8,7 +8,8 @@ Supports three connection modes selected automatically from ``backend_path``:
 
 Install with::
 
-    pip install 'mnema-mcp[qdrant]'
+    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \\
+      | MNEMA_EXTRAS="qdrant,local" bash
 """
 
 from __future__ import annotations
@@ -37,8 +38,10 @@ class QdrantBackend(VectorBackend):
             from qdrant_client.http import models as qm
         except ImportError as exc:  # pragma: no cover - guarded by factory
             raise BackendInitError(
-                "qdrant-client is not installed. Install with: "
-                "pip install 'mnema-mcp[qdrant]'"
+                "qdrant-client is not installed. Reinstall Mnema with the "
+                "'qdrant' extra:\n"
+                "    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+                "| MNEMA_EXTRAS='qdrant,local' bash"
             ) from exc
 
         self._config = config

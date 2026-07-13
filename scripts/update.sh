@@ -48,13 +48,14 @@ ok "Pulled new commits."
 
 info "Reinstalling dependencies..."
 cd "$PKG_DIR"
+# Preserve the extras chosen at install time (default to "default").
+EXTRAS="$(cat "$REPO_DIR/.extras" 2>/dev/null || echo default)"
 if [[ -n "$VENV" ]]; then
-  VIRTUAL_ENV="$VENV" uv pip install -e '.[default]'
+  VIRTUAL_ENV="$VENV" uv pip install -e ".[${EXTRAS}]"
 else
-  # Fall back to uv tool install (creates its own isolated env).
-  uv tool install --force -e '.[default]'
+  uv tool install --force -e ".[${EXTRAS}]"
 fi
-ok "Reinstalled."
+ok "Reinstalled (extras: ${EXTRAS})."
 
 info "Verifying..."
 if [[ -n "$VENV" ]]; then

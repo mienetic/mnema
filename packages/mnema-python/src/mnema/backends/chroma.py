@@ -6,7 +6,8 @@ server is preferred, set ``backend_path`` to its ``http://host:port`` URL.
 
 Install with::
 
-    pip install 'mnema-mcp[chroma]'
+    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \\
+      | MNEMA_EXTRAS='chroma,local' bash
 """
 
 from __future__ import annotations
@@ -22,6 +23,12 @@ from mnema.backends.base import BackendHit, BackendQuery, VectorBackend
 from mnema.config import MnemaConfig
 from mnema.errors import BackendInitError
 from mnema.models import MemoryRecord
+
+_INSTALL_HINT = (
+    "chromadb is not installed. Reinstall Mnema with the 'chroma' extra:\n"
+    "    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+    "| MNEMA_EXTRAS='chroma,local' bash"
+)
 
 
 def _cosine_to_unit(raw: float) -> float:
@@ -46,10 +53,7 @@ class ChromaBackend(VectorBackend):
         try:
             import chromadb
         except ImportError as exc:  # pragma: no cover - guarded by factory
-            raise BackendInitError(
-                "chromadb is not installed. Install with: "
-                "pip install 'mnema-mcp[chroma]'"
-            ) from exc
+            raise BackendInitError(_INSTALL_HINT) from exc
 
         self._config = config
         self._dim = config.embedding_dim

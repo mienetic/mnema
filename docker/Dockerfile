@@ -1,7 +1,8 @@
 # Mnema MCP server — Python image.
 #
-# Default: Chroma backend + local embeddings (offline). Override backend at
-# runtime with MNEMA_BACKEND / MNEMA_BACKEND_PATH.
+# Installs from GitHub (Mnema is NOT on PyPI). Default: Chroma backend +
+# local embeddings (offline). Override backend at runtime with
+# MNEMA_BACKEND / MNEMA_BACKEND_PATH.
 
 FROM python:3.11-slim AS base
 
@@ -12,9 +13,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install the package with the default extras.
-# For other backends, build a derived image or override these extras.
-RUN pip install --no-cache-dir 'mnema-mcp[default]'
+# Install uv (fast installer) and clone Mnema from GitHub.
+RUN pip install --no-cache-dir uv \
+    && git clone --depth 1 https://github.com/mienetic/mnema /app/mnema
+
+WORKDIR /app/mnema/packages/mnema-python
+
+# Create a venv and install with the default extras.
+# Override MNEMA_EXTRAS at build time to pick different backends:
+#   docker build --build-arg MNEMA_EXTRAS=all -t mnema .
+ARG MNEMA_EXTRAS=default
+RUN uv venv --python 3.11 /app/.venv \
+    && VIRTUAL_ENV=/app/.venv uv pip install -e ".[${MNEMA_EXTRAS}]"
 
 # Default config — override at runtime.
 ENV MNEMA_BACKEND=chroma \
@@ -22,7 +32,8 @@ ENV MNEMA_BACKEND=chroma \
     MNEMA_DEFAULT_SCOPE=global \
     MNEMA_TRANSPORT=http \
     MNEMA_HTTP_HOST=0.0.0.0 \
-    MNEMA_HTTP_PORT=8000
+    MNEMA_HTTP_PORT=8000 \
+    PATH="/app/.venv/bin:$PATH"
 
 VOLUME ["/data"]
 EXPOSE 8000

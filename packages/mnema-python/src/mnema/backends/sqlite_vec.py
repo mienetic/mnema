@@ -6,7 +6,8 @@ footprint or are running inside constrained environments.
 
 Install with::
 
-    pip install 'mnema-mcp[sqlite_vec]'
+    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \\
+      | MNEMA_EXTRAS='sqlite_vec,local' bash
 """
 
 from __future__ import annotations
@@ -47,8 +48,10 @@ class SqliteVecBackend(VectorBackend):
             import sqlite_vec
         except ImportError as exc:  # pragma: no cover - guarded by factory
             raise BackendInitError(
-                "sqlite-vec is not installed. Install with: "
-                "pip install 'mnema-mcp[sqlite_vec]'"
+                "sqlite-vec is not installed. Reinstall Mnema with the "
+                "'sqlite_vec' extra:\n"
+                "    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+                "| MNEMA_EXTRAS='sqlite_vec,local' bash"
             ) from exc
 
         self._config = config

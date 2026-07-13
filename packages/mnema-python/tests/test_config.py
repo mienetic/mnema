@@ -49,7 +49,9 @@ class TestErrors:
         err = BackendNotAvailableError("chroma", "chroma")
         msg = str(err)
         assert "chroma" in msg
-        assert "mnema-mcp[chroma]" in msg
+        # Points at the installer (not pip), with the right extra.
+        assert "install.sh" in msg
+        assert "MNEMA_EXTRAS='chroma'" in msg
 
     def test_memory_not_found(self):
         from mnema.errors import MemoryNotFoundError

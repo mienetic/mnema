@@ -12,10 +12,9 @@ the box; more are welcome (see CONTRIBUTING).
 
 Loads a model once at startup, then runs inference on-device. The default
 `all-MiniLM-L6-v2` is small (~80 MB), fast on CPU, and good enough for most
-memory use cases.
+memory use cases. **Included in the default install** — nothing extra to do.
 
-```bash
-pip install 'mnema-mcp[local]'    # included in [default] and [all]
+```
 MNEMA_EMBEDDING=local
 MNEMA_EMBEDDING_MODEL=all-MiniLM-L6-v2
 ```
@@ -40,8 +39,16 @@ Uses the `text-embedding-3-*` family. Supports the `dimensions` parameter
 to shorten vectors (e.g. 256-d from `text-embedding-3-large`) for big
 storage savings with minimal recall loss.
 
+Reinstall with the OpenAI extra first:
+
 ```bash
-pip install 'mnema-mcp[openai]'
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="default,openai" bash
+```
+
+Then configure:
+
+```bash
 export MNEMA_EMBEDDING=openai
 export MNEMA_EMBEDDING_MODEL=text-embedding-3-small
 export MNEMA_OPENAI_API_KEY=sk-...

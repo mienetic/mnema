@@ -11,10 +11,13 @@ over stdin/stdout. Best for desktop clients (Claude Desktop, ZCode).
 ```json
 {
   "mcpServers": {
-    "mnema": { "command": "uvx", "args": ["mnema-mcp"] }
+    "mnema": { "command": "mnema" }
   }
 }
 ```
+
+(Requires Mnema to be installed first — see the one-line installer in the
+[README](../README.md#-quick-start) or [GETTING_STARTED.md](../GETTING_STARTED.md).)
 
 - ✅ Zero network configuration.
 - ✅ Per-client data isolation (each client gets its own store path).

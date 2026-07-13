@@ -12,27 +12,45 @@ interface.
 
 ## Selecting a backend
 
-```bash
-# Via env
-export MNEMA_BACKEND=qdrant
+The default install includes **Chroma** (embedded, zero-config). To use a
+different backend, **reinstall with the right extras** then switch via env:
 
-# Via .env
-echo "MNEMA_BACKEND=sqlite_vec" >> .env
+```bash
+# Reinstall (from the source checkout). MNEMA_EXTRAS is a comma-separated list.
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="qdrant" bash
+
+# Or, if you already have the source locally:
+cd ~/.mnema-src/packages/mnema-python
+VIRTUAL_ENV=~/.mnema-src/.venv uv pip install -e '.[qdrant]'
+
+# Then point Mnema at the new backend:
+echo 'MNEMA_BACKEND=qdrant' >> ~/.mnema.env   # or export in your shell
+mnema --doctor
 ```
 
-Or override per-invocation when constructing the service programmatically
-(see `examples/demo_memories.py`).
+| Extra | What it installs |
+|---|---|
+| `default` (= `chroma,local`) | included automatically |
+| `chroma` | ChromaDB (embedded, default backend) |
+| `qdrant` | Qdrant client (local or remote) |
+| `sqlite_vec` | sqlite-vec loadable extension |
+| `local` | sentence-transformers (offline embeddings) |
+| `openai` | OpenAI embeddings |
+| `all` | everything above |
+
+You can combine extras: `MNEMA_EXTRAS="qdrant,openai"`, or install everything
+with `MNEMA_EXTRAS=all`.
 
 ---
 
 ## Chroma (default)
 
-**Embedded, persistent, zero-config.**
+**Embedded, persistent, zero-config.** Active out of the box.
 
-```bash
-pip install 'mnema-mcp[chroma]'   # included in [default]
+```
 MNEMA_BACKEND=chroma
-MNEMA_BACKEND_PATH=~/.mnema/data
+MNEMA_BACKEND_PATH=~/.mnema-data
 ```
 
 - Runs in-process via `chromadb.PersistentClient`. No server to start.
@@ -44,9 +62,7 @@ MNEMA_BACKEND_PATH=~/.mnema/data
 
 **Embedded local, in-memory, or remote — production grade.**
 
-```bash
-pip install 'mnema-mcp[qdrant]'
-```
+Install with: `MNEMA_EXTRAS=qdrant bash scripts/install.sh`
 
 Three modes selected by `MNEMA_BACKEND_PATH`:
 
@@ -63,10 +79,11 @@ indexes on `scope` and `tags` for fast filtering.
 
 **Pure SQLite + the sqlite-vec loadable extension. Smallest possible footprint.**
 
-```bash
-pip install 'mnema-mcp[sqlite_vec]'
+Install with: `MNEMA_EXTRAS=sqlite_vec bash scripts/install.sh`
+
+```
 MNEMA_BACKEND=sqlite_vec
-MNEMA_BACKEND_PATH=~/.mnema/mnema.db
+MNEMA_BACKEND_PATH=~/.mnema-data/mnema.db
 ```
 
 - Loads `sqlite-vec` into a standard `sqlite3` connection.

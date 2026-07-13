@@ -23,15 +23,17 @@ class BackendError(MnemaError):
 class BackendNotAvailableError(BackendError):
     """Raised when the requested backend's optional dependency is missing.
 
-    The error message tells the user exactly which ``pip install`` extra to
-    add so they can recover without reading the docs.
+    The error message points the user at the one-line installer so they can
+    recover without reading the docs.
     """
 
     def __init__(self, backend: str, extra: str) -> None:
         super().__init__(
             f"The {backend!r} backend requires the optional dependency "
-            f"'{extra}'. Install it with:  pip install 'mnema-mcp[{extra}]'  "
-            f"(or 'mnema-mcp[all]' for every backend)."
+            f"'{extra}'. Reinstall Mnema with that extra, e.g.:\n"
+            f"    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+            f"| MNEMA_EXTRAS='{extra}' bash\n"
+            f"(or MNEMA_EXTRAS='all' for every backend)."
         )
         self.backend = backend
         self.extra = extra
@@ -43,8 +45,10 @@ class EmbeddingNotAvailableError(MnemaError):
     def __init__(self, provider: str, extra: str) -> None:
         super().__init__(
             f"The {provider!r} embedding provider requires the optional "
-            f"dependency '{extra}'. Install it with:  "
-            f"pip install 'mnema-mcp[{extra}]'  (or 'mnema-mcp[all]')."
+            f"dependency '{extra}'. Reinstall Mnema with that extra, e.g.:\n"
+            f"    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+            f"| MNEMA_EXTRAS='{extra}' bash\n"
+            f"(or MNEMA_EXTRAS='all' for every backend)."
         )
         self.provider = provider
         self.extra = extra

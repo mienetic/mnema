@@ -1,12 +1,11 @@
 {
-  "_comment": "Claude Desktop config — add to ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or %APPDATA%\\Claude\\claude_desktop_config.json (Windows)",
+  "_comment": "Claude Desktop config — add to ~/Library/Application Support/Claude/claude_desktop_config.json (macOS) or %APPDATA%\\Claude\\claude_desktop_config.json (Windows). Install Mnema first via: curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh | bash",
   "mcpServers": {
     "mnema": {
-      "command": "uvx",
-      "args": ["mnema-mcp"],
+      "command": "mnema",
       "env": {
         "MNEMA_BACKEND": "chroma",
-        "MNEMA_BACKEND_PATH": "~/.mnema/claude",
+        "MNEMA_BACKEND_PATH": "~/.mnema-data",
         "MNEMA_EMBEDDING": "local",
         "MNEMA_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
         "MNEMA_DEFAULT_SCOPE": "user:me"

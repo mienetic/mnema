@@ -1,47 +1,42 @@
 name: Release
 
+# Create a GitHub Release (with auto-generated notes) when a `v*` tag is pushed.
+#
+# Mnema is NOT published to PyPI — installation is via the one-line installer
+# (git + uv). This workflow just cuts a release so users get nice release notes
+# and `mnema-update` users have tags to pull.
+
 on:
   push:
     tags: ["v*"]
 
 jobs:
-  build-and-publish:
-    name: Build and publish to PyPI
+  release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # for trusted publishing (OIDC)
-      contents: write  # to create the GitHub Release
-
-    defaults:
-      run:
-        working-directory: packages/mnema-python
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install build tooling
-        run: pip install build
-
-      - name: Build sdist + wheel
-        run: python -m build
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        # Configure trusted publishing at https://pypi.org/manage/project/mnema-mcp/settings/publishing/
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            packages/mnema-python/dist/*.whl
-            packages/mnema-python/dist/*.tar.gz
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
+          body: |
+            ## Install / update
+
+            ```bash
+            # First-time install
+            curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh | bash
+
+            # Update an existing install
+            mnema-update
+            ```
+
+            See the [full changelog](https://github.com/mienetic/mnema/blob/main/CHANGELOG.md).

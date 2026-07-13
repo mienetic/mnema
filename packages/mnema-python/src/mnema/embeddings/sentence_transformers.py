@@ -6,7 +6,8 @@ for every embed call. The model is downloaded on first use and cached under
 
 Install with::
 
-    pip install 'mnema-mcp[local]'
+    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \\
+      | MNEMA_EXTRAS='chroma,local' bash
 """
 
 from __future__ import annotations
@@ -41,8 +42,10 @@ class SentenceTransformersProvider(EmbeddingProvider):
             from sentence_transformers import SentenceTransformer
         except ImportError as exc:  # pragma: no cover - guarded by factory
             raise BackendInitError(
-                "sentence-transformers is not installed. Install with: "
-                "pip install 'mnema-mcp[local]'"
+                "sentence-transformers is not installed. Reinstall Mnema with "
+                "the 'local' extra:\n"
+                "    curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh "
+                "| MNEMA_EXTRAS='chroma,local' bash"
             ) from exc
 
         self._model_name = config.embedding_model or "all-MiniLM-L6-v2"

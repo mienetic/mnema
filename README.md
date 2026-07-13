@@ -2,6 +2,7 @@
 
 > Give your AI agents persistent, searchable memory. Solve the context-window problem with **MCP × Vector DB**.
 
+[![Install](https://img.shields.io/badge/install-one--line-22C55E.svg)](#-quick-start)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-1.x-purple.svg)](https://modelcontextprotocol.io/)
@@ -49,6 +50,29 @@ mnema --doctor          # check backend + embedding loaded
 mnema                   # run the MCP server (stdio, for clients)
 mnema-update            # git pull + reinstall + verify (run this to upgrade)
 ```
+
+### Pick different backends / embeddings (optional)
+
+The default install ships **Chroma + local embeddings** — enough for most
+users. To use another backend, reinstall with the matching extra(s):
+
+```bash
+# Qdrant (local or remote)
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="qdrant,local" bash
+
+# sqlite-vec (smallest footprint)
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="sqlite_vec,local" bash
+
+# Everything (all backends + OpenAI embeddings)
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS=all bash
+```
+
+Available extras: `chroma`, `qdrant`, `sqlite_vec`, `local`, `openai`, `default`
+(= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and
+[docs/embedding-providers.md](docs/embedding-providers.md).
 
 ### Manual / from source
 
@@ -198,14 +222,20 @@ All settings are environment-driven (or `.env`):
 
 | Backend | Install extra | Embedded? | Best for |
 |---|---|---|---|
-| **Chroma** (default) | `[chroma]` | ✅ in-process + persistent | Quick start, single-user, dev |
-| **Qdrant** | `[qdrant]` | ✅ local path / `:memory:` / remote | Production, high scale, metadata filtering |
-| **sqlite-vec** | `[sqlite_vec]` | ✅ pure SQLite | Smallest footprint, constrained envs |
+| **Chroma** (default) | `chroma` | ✅ in-process + persistent | Quick start, single-user, dev |
+| **Qdrant** | `qdrant` | ✅ local path / `:memory:` / remote | Production, high scale, metadata filtering |
+| **sqlite-vec** | `sqlite_vec` | ✅ pure SQLite | Smallest footprint, constrained envs |
+
+Switch backends by reinstalling with the right extra and setting the env var:
 
 ```bash
-pip install 'mnema-mcp[chroma]'     # or [qdrant] or [sqlite_vec]
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="qdrant,local" bash
 export MNEMA_BACKEND=qdrant
+mnema --doctor
 ```
+
+See [docs/backends.md](docs/backends.md) for full details.
 
 ---
 
@@ -213,14 +243,18 @@ export MNEMA_BACKEND=qdrant
 
 | Provider | Install extra | Mode | Dim |
 |---|---|---|---|
-| **sentence-transformers** (default) | `[local]` | Offline (CPU/GPU) | 384 (`all-MiniLM-L6-v2`) |
-| **OpenAI** | `[openai]` | API (requires key) | 1536 (`text-embedding-3-small`) |
+| **sentence-transformers** (default) | `local` | Offline (CPU/GPU) | 384 (`all-MiniLM-L6-v2`) |
+| **OpenAI** | `openai` | API (requires key) | 1536 (`text-embedding-3-small`) |
 
 ```bash
-pip install 'mnema-mcp[openai]'
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="chroma,openai" bash
 export MNEMA_EMBEDDING=openai
 export MNEMA_OPENAI_API_KEY=sk-...
+mnema --doctor
 ```
+
+See [docs/embedding-providers.md](docs/embedding-providers.md) for model options.
 
 ---
 
@@ -231,7 +265,8 @@ git clone https://github.com/mienetic/mnema.git
 cd mnema/packages/mnema-python
 
 # Install with dev deps + all backends
-uv pip install -e '.[all,dev]'
+uv venv --python 3.11 .venv
+VIRTUAL_ENV=.venv uv pip install -e '.[all,dev]'
 
 # Run tests (skips backends whose deps are missing)
 pytest
