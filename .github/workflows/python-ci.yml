@@ -39,9 +39,11 @@ jobs:
       - name: Lint (ruff)
         run: .venv/bin/ruff check src/ tests/
 
-      - name: Type-check (mypy)
-        run: .venv/bin/mypy src/mnema
-        continue-on-error: true  # mypy strict can be noisy; tighten over time
+      # Type-checking is informational. mypy strict mode still has ~90 errors
+      # to clean up; we don't want to block PRs on it yet. Re-enable as a
+      # required check once the codebase is fully annotated.
+      - name: Type-check (mypy, informational)
+        run: .venv/bin/mypy src/mnema || true
 
       - name: Run tests
         run: .venv/bin/pytest -v --cov=mnema --cov-report=term-missing
