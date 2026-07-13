@@ -22,6 +22,7 @@
 - **👥 Multi-user / multi-session** — scope-based namespace isolation (`user:alice`, `session:abc`, `agent:bot-1`).
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
+- **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
 - **🧪 Well-tested** — pure-function unit tests + a backend matrix that runs against every supported store.
 
 ---
@@ -289,6 +290,41 @@ Ready-to-copy configs for all clients are in [`examples/`](examples/).
 Plus **resources** (`mnema://memory/{id}`, `mnema://scope/{s}/summary`, `mnema://stats`) and **prompt templates** (`summarize_scope`, `recall_for`).
 
 See **[SKILL.md](SKILL.md)** for the full agent-facing usage guide.
+
+---
+
+## 💻 CLI
+
+You don't need an AI client to use Mnema — the `mnema` command works as a
+terminal tool too. (Comes free with the installer.)
+
+```bash
+# Store a memory
+mnema add "Alice prefers Earl Grey tea" --tags pref,tea --scope user:alice
+
+# Recall by meaning
+mnema recall "what does alice drink?" --scope user:alice
+
+# Hybrid search (vector + tags + decay)
+mnema search "preferences" --tag pref --scope user:alice
+
+# Inspect
+mnema get <id>
+mnema list-scopes
+mnema stats
+
+# Maintain
+mnema decay --threshold 0.1            # dry-run: list low-value memories
+mnema decay --threshold 0.1 --apply    # actually forget them
+mnema summarize session:abc            # plan how to condense a scope
+
+# Backup / migrate
+mnema export -o memories.json
+mnema import -i memories.json
+```
+
+Add `--json` to any read command for machine-readable output. Run
+`mnema <command> --help` for full options.
 
 ---
 
