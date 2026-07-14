@@ -1,0 +1,41 @@
+diff --git a/packages/mnema-python/src/mnema/config.py b/packages/mnema-python/src/mnema/config.py
+index 90b97bf..03858cd 100644
+--- a/packages/mnema-python/src/mnema/config.py
++++ b/packages/mnema-python/src/mnema/config.py
+@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
+ from mnema.errors import ConfigError
+ 
+ BackendName = Literal["chroma", "qdrant", "sqlite_vec"]
+-EmbeddingName = Literal["local", "openai"]
++EmbeddingName = Literal["local", "openai","ollama"]
+ TransportName = Literal["stdio", "http"]
+ 
+ 
+@@ -75,7 +75,10 @@ class MnemaConfig(BaseSettings):
+         default=None,
+         description="Optional OpenAI-compatible base URL (Azure, local proxies, etc.)",
+     )
+-
++    ollama_url: str = Field(
++        default="http://localhost:11434",
++        description="Ollama server URL (Used when embedding='ollama')",
++    )
+     # --- Behavior ----------------------------------------------------------
+     default_scope: str = Field(
+         default="global",
+diff --git a/packages/mnema-python/src/mnema/embeddings/__init__.py b/packages/mnema-python/src/mnema/embeddings/__init__.py
+index 53723d7..ac7f630 100644
+--- a/packages/mnema-python/src/mnema/embeddings/__init__.py
++++ b/packages/mnema-python/src/mnema/embeddings/__init__.py
+@@ -38,6 +38,11 @@ def make_embedding(config: MnemaConfig) -> EmbeddingProvider:
+             raise EmbeddingNotAvailableError("openai", "openai") from exc
+         return OpenAIEmbeddingProvider(config)
+ 
++    if provider == "ollama":
++        from mnema.embeddings.ollama import OllamaEmbeddingProvider
++
++        return OllamaEmbeddingProvider(config)
++
+     raise ConfigError(f"Unknown embedding provider: {provider!r}")
+ 
+ 

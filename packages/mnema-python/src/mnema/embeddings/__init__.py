@@ -38,6 +38,11 @@ def make_embedding(config: MnemaConfig) -> EmbeddingProvider:
             raise EmbeddingNotAvailableError("openai", "openai") from exc
         return OpenAIEmbeddingProvider(config)
 
+    if provider == "ollama":
+        from mnema.embeddings.ollama import OllamaEmbeddingProvider
+
+        return OllamaEmbeddingProvider(config)
+
     raise ConfigError(f"Unknown embedding provider: {provider!r}")
 
 
