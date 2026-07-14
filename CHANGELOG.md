@@ -6,17 +6,51 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **`mnema` CLI** — full terminal interface that reuses `MemoryService`, so it
+  behaves identically to an MCP-connected client. Subcommands: `add`,
+  `recall`, `search`, `get`, `update`, `forget`, `forget-scope`, `list-scopes`,
+  `stats`, `decay`, `summarize`, `export`, `import` (with aliases like
+  `remember`, `delete`, `scopes`). `--json` output on every read command.
+- **`mnema re-embed`** — re-embed all memories with the currently configured
+  embedding provider, for migrating after switching `MNEMA_EMBEDDING` /
+  `MNEMA_EMBEDDING_MODEL`. Safe to interrupt and re-run. ([#9](https://github.com/mienetic/mnema/issues/9))
+- **`mnema --doctor --fix`** — attempts automatic remediation (creates a
+  missing data directory, suggests the exact fix for a missing API key). ([#2](https://github.com/mienetic/mnema/issues/2))
+- **Ollama embedding provider** — talk to a local Ollama server
+  (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
+  model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))
+- **Auto-recall & auto-remember prompt hooks** — new `remember_this` prompt
+  template and a "Proactive memory workflow" section in `SKILL.md` so agents
+  recall at the start of a task and store durable facts the moment they
+  appear. ([#1](https://github.com/mienetic/mnema/issues/1))
+- **One-line installer** (`curl … | bash`) that sets up `uv`, clones the repo,
+  creates an isolated Python 3.11 venv, and installs the `mnema` +
+  `mnema-update` launchers. Supports `MNEMA_EXTRAS` to pick backends/providers.
+- **`mnema-update`** — one-command updater (git pull + reinstall + verify)
+  that preserves the extras chosen at install time.
+- **Per-agent setup guides** for 8 MCP clients: Claude Desktop, Claude Code,
+  Cursor, Zed, Cline, Continue.dev, Windsurf, and ZCode.
+- **Thai getting-started guide** (`GETTING_STARTED.md`) for non-developers.
+- **`ROADMAP.md`** with prioritized phases 1–4 and status indicators.
+- **GitHub issue/PR templates** + Discussions enabled.
+- **CI** (GitHub Actions) running tests + lint across Python 3.10–3.13.
+
+### Changed
+- Installation is **git + uv only** (not published on PyPI). All docs,
+  example configs, Dockerfile, and error messages point at the one-line
+  installer instead of `pip install mnema-mcp`.
+
 ### Planned
 - TypeScript MCP server (`packages/mnema-ts/`)
-- Node CLI (`packages/mnema-cli/`)
+- Web dashboard for browsing memories
 - Evaluation harness (`docs/evaluations.xml`)
-- Web dashboard
 
 ## [0.1.0] — 2026-07-13
 
 ### Added
 - 🎉 Initial public release.
-- **MCP server** (Python, FastMCP) with 10 tools:
+- **MCP server** (Python, FastMCP) with 11 tools:
   `mnema_remember`, `mnema_recall`, `mnema_search`, `mnema_get_memory`,
   `mnema_update_memory`, `mnema_forget`, `mnema_forget_scope`,
   `mnema_list_scopes`, `mnema_summarize`, `mnema_apply_decay`, `mnema_stats`.
