@@ -25,7 +25,7 @@
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
 - **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
-- **🧪 Well-tested** — 79 tests across pure-function unit tests + a backend matrix that runs against every supported store.
+- **🧪 Well-tested** — 86 tests across pure-function unit tests + a backend matrix that runs against every supported store.
 
 ---
 
@@ -493,7 +493,7 @@ mnema/
 │       │   ├── summarize.py  # summarization planner
 │       │   ├── sdk.py        # programmatic SDK
 │       │   └── server.py     # FastMCP bootstrap
-│       └── tests/            # 79 tests (unit + backend matrix)
+│       └── tests/            # 86 tests (unit + backend matrix)
 ├── docker/                   # Dockerfile + compose
 ├── docs/                     # architecture, backends, deployment
 ├── examples/                 # client config examples
@@ -541,9 +541,9 @@ where `decay = recency(half-life) × frequency × importance`.
 
 ## 🗺️ Roadmap
 
-**Done in v0.1.0:** Python MCP server · Chroma/Qdrant/sqlite-vec backends · local/OpenAI/Ollama embeddings · hybrid search with decay · summarization planner · Python SDK · CLI (`add`/`recall`/`search`/`export`/`import`/...) · one-line installer · per-agent setup guides for 8 clients.
+**Done in v0.1.0:** Python MCP server · Chroma/Qdrant/sqlite-vec backends · local/OpenAI/Ollama embeddings · hybrid search with decay · summarization planner · Python SDK · CLI (`add`/`recall`/`search`/`export`/`import`/`re-embed`/...) · auto-recall & auto-remember prompt hooks · `--doctor --fix` · one-line installer · per-agent setup guides for 8 clients.
 
-**Next up (Phase 1–2):** auto-recall prompt hooks · web dashboard · pgvector backend · re-embed migration helper.
+**Next up (Phase 1–2):** web dashboard · pgvector backend · more embedding providers (Cohere/Voyage/Nomic).
 
 See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 
