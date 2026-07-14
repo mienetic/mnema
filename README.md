@@ -2,6 +2,7 @@
 
 > Give your AI agents persistent, searchable memory. Solve the context-window problem with **MCP × Vector DB**.
 
+[![CI](https://github.com/mienetic/mnema/actions/workflows/python-ci.yml/badge.svg)](https://github.com/mienetic/mnema/actions/workflows/python-ci.yml)
 [![Install](https://img.shields.io/badge/install-one--line-22C55E.svg)](#-quick-start)
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -14,16 +15,17 @@
 
 ## ✨ Features
 
-- **🔌 MCP-native** — drop it into Claude Desktop, ZCode, Cursor, or any MCP-compatible client.
+- **🔌 MCP-native** — drop it into Claude Desktop, Claude Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode, or any MCP-compatible client.
 - **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), or sqlite-vec (pure-SQLite, zero-dep).
-- **🧠 Hybrid search** — combines **semantic similarity** + **tag overlap** + **decay scoring** into a single ranked score.
+- **🧠 Pluggable embeddings** — sentence-transformers (offline, default), OpenAI, or Ollama (local server).
+- **🔍 Hybrid search** — combines **semantic similarity** + **tag overlap** + **decay scoring** into a single ranked score.
 - **⏳ Memory decay** — a forgetting curve (`recency × frequency × importance`) so the store stays focused on what matters.
 - **📝 Summarization** — plans how to condense many memories into a few high-level ones; the calling AI executes the plan (Mnema never calls an LLM on its own).
 - **👥 Multi-user / multi-session** — scope-based namespace isolation (`user:alice`, `session:abc`, `agent:bot-1`).
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
 - **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
-- **🧪 Well-tested** — pure-function unit tests + a backend matrix that runs against every supported store.
+- **🧪 Well-tested** — 79 tests across pure-function unit tests + a backend matrix that runs against every supported store.
 
 ---
 
@@ -48,6 +50,7 @@ That's it. The installer:
 
 ```bash
 mnema --doctor          # check backend + embedding loaded
+mnema --doctor --fix    # attempt to fix common problems (missing dir, etc.)
 mnema                   # run the MCP server (stdio, for clients)
 mnema-update            # git pull + reinstall + verify (run this to upgrade)
 ```
@@ -71,8 +74,8 @@ curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install
   | MNEMA_EXTRAS=all bash
 ```
 
-Available extras: `chroma`, `qdrant`, `sqlite_vec`, `local`, `openai`, `default`
-(= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and
+Available extras: `chroma`, `qdrant`, `sqlite_vec`, `local`, `openai`, `ollama`,
+`default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and
 [docs/embedding-providers.md](docs/embedding-providers.md).
 
 ### Manual / from source
@@ -371,10 +374,11 @@ All settings are environment-driven (or `.env`):
 | `MNEMA_BACKEND` | `chroma` | `chroma` \| `qdrant` \| `sqlite_vec` |
 | `MNEMA_BACKEND_PATH` | `.mnema/data` | Local path or remote URL (`http://…`) |
 | `MNEMA_BACKEND_COLLECTION` | `memories` | Collection/table name |
-| `MNEMA_EMBEDDING` | `local` | `local` (offline) \| `openai` |
+| `MNEMA_EMBEDDING` | `local` | `local` (offline) \| `openai` \| `ollama` |
 | `MNEMA_EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Model name |
 | `MNEMA_EMBEDDING_DIM` | _auto_ | Override vector dim |
 | `MNEMA_OPENAI_API_KEY` | — | Required when `embedding=openai` |
+| `MNEMA_OLLAMA_URL` | `http://localhost:11434` | Ollama server URL (when `embedding=ollama`) |
 | `MNEMA_DEFAULT_SCOPE` | `global` | Scope when a tool omits it |
 | `MNEMA_DECAY_HALF_LIFE_DAYS` | `30` | Recency half-life |
 | `MNEMA_DECAY_FLOOR` | `0.05` | Min decay score |
@@ -475,23 +479,24 @@ See [`docker/`](docker/) for the Dockerfile and compose setup.
 ```
 mnema/
 ├── packages/
-│   ├── mnema-python/         # ⭐ MCP server + SDK (Python)
-│   │   ├── src/mnema/
-│   │   │   ├── backends/     # chroma, qdrant, sqlite_vec
-│   │   │   ├── embeddings/   # sentence_transformers, openai
-│   │   │   ├── tools/        # 10 MCP tools
-│   │   │   ├── service.py    # orchestration
-│   │   │   ├── decay.py      # forgetting curve
-│   │   │   ├── summarize.py  # summarization planner
-│   │   │   ├── sdk.py        # programmatic SDK
-│   │   │   └── server.py     # FastMCP bootstrap
-│   │   └── tests/
-│   ├── mnema-ts/             # TypeScript MCP server (planned)
-│   └── mnema-cli/            # Node CLI (planned)
+│   └── mnema-python/         # ⭐ MCP server + SDK + CLI (Python)
+│       ├── src/mnema/
+│       │   ├── backends/     # chroma, qdrant, sqlite_vec
+│       │   ├── embeddings/   # sentence_transformers, openai, ollama
+│       │   ├── tools/        # 11 MCP tools
+│       │   ├── cli.py        # terminal CLI (add/recall/search/...)
+│       │   ├── service.py    # orchestration
+│       │   ├── decay.py      # forgetting curve
+│       │   ├── summarize.py  # summarization planner
+│       │   ├── sdk.py        # programmatic SDK
+│       │   └── server.py     # FastMCP bootstrap
+│       └── tests/            # 79 tests (unit + backend matrix)
 ├── docker/                   # Dockerfile + compose
 ├── docs/                     # architecture, backends, deployment
 ├── examples/                 # client config examples
+├── scripts/                  # one-line installer + updater
 ├── SKILL.md                  # agent-facing usage guide
+├── ROADMAP.md                # prioritized roadmap (Phase 1–4)
 └── README.md
 ```
 
@@ -533,16 +538,11 @@ where `decay = recency(half-life) × frequency × importance`.
 
 ## 🗺️ Roadmap
 
-- [x] Python MCP server (FastMCP)
-- [x] Chroma / Qdrant / sqlite-vec backends
-- [x] Local + OpenAI embeddings
-- [x] Hybrid search with decay
-- [x] Summarization planner
-- [x] Programmatic Python SDK
-- [ ] TypeScript MCP server (native Node runtime)
-- [ ] CLI (`mnema add`, `mnema recall`, …)
-- [ ] Web dashboard for browsing memories
-- [ ] Evaluation harness (`docs/evaluations.xml`)
+**Done in v0.1.0:** Python MCP server · Chroma/Qdrant/sqlite-vec backends · local/OpenAI/Ollama embeddings · hybrid search with decay · summarization planner · Python SDK · CLI (`add`/`recall`/`search`/`export`/`import`/...) · one-line installer · per-agent setup guides for 8 clients.
+
+**Next up (Phase 1–2):** auto-recall prompt hooks · web dashboard · pgvector backend · re-embed migration helper.
+
+See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 
 ---
 
@@ -555,6 +555,7 @@ where `decay = recency(half-life) × frequency × importance`.
 - [Model Context Protocol](https://modelcontextprotocol.io) — the protocol that makes this possible.
 - [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec) — excellent open-source vector stores.
 - [sentence-transformers](https://www.sbert.net/) — offline embeddings for everyone.
+- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama embedding provider).
 
 ---
 
