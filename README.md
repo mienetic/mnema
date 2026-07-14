@@ -324,6 +324,9 @@ mnema summarize session:abc            # plan how to condense a scope
 # Backup / migrate
 mnema export -o memories.json
 mnema import -i memories.json
+
+# Re-embed after switching embedding model (see docs/embedding-providers.md)
+mnema re-embed
 ```
 
 Add `--json` to any read command for machine-readable output. Run

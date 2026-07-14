@@ -49,6 +49,8 @@ _CLI_COMMANDS = {
     "doctor",
     "export",
     "import",
+    "re-embed",
+    "reembed",
 }
 
 

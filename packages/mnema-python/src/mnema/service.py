@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import contextlib
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 
 from mnema.backends import BackendQuery, VectorBackend, make_backend
 from mnema.config import MnemaConfig, load_config
@@ -198,6 +198,61 @@ class MemoryService:
             embedding_dim=self.embedding_dim,
             backend=self._backend.name,
         )
+
+    # --- re-embed (migration) -------------------------------------------
+    async def reembed(
+        self,
+        *,
+        scope: str | None = None,
+        batch_size: int = 50,
+        on_progress: Callable[[int, int], None] | None = None,
+    ) -> int:
+        """Re-embed every memory using the **currently configured** embedding provider.
+
+        Use this after switching `MNEMA_EMBEDDING` / `MNEMA_EMBEDDING_MODEL`:
+        existing vectors were produced by the old model and have the wrong
+        geometry (and possibly a different dimension). This re-embeds every
+        memory's ``text`` with the provider this service is currently bound
+        to, and writes the new vectors back.
+
+        Safe to interrupt and re-run — already-updated memories simply get
+        re-embedded again (idempotent in outcome, not in work).
+
+        Args:
+            scope: Restrict to one scope, or None for all memories.
+            batch_size: How many texts to embed per provider call. Larger
+                batches are more efficient but use more memory.
+            on_progress: Optional callback ``(done, total)`` for progress UI.
+
+        Returns:
+            The number of memories re-embedded.
+
+        Raises:
+            ValueError: if the store is empty.
+        """
+        scope_val = self._scope(scope) if scope else None
+
+        # Materialize once so we know the total for progress reporting and so
+        # we don't hold the iteration open across embed calls.
+        records = [r async for r in self._backend.iter_all(scope=scope_val)]
+        total = len(records)
+        if total == 0:
+            return 0
+
+        done = 0
+        for start in range(0, total, batch_size):
+            chunk = records[start : start + batch_size]
+            texts = [r.text for r in chunk]
+            vectors = await self._embedding.embed(texts)
+            for record, vector in zip(chunk, vectors, strict=True):
+                await self._backend.update(
+                    record.id,
+                    embedding=list(vector),
+                )
+                done += 1
+                if on_progress is not None:
+                    on_progress(done, total)
+        return done
 
     # --- decay & summarize ---------------------------------------------
     async def apply_decay(

@@ -31,8 +31,9 @@ MNEMA_EMBEDDING_MODEL=all-MiniLM-L6-v2
 | `paraphrase-multilingual-MiniLM-L12-v2` | 384 | multilingual |
 
 ⚠️ Changing the model after memories exist will **break** vector search
-(the new vectors will have a different geometry). To switch models, either
-start a fresh store or re-embed everything.
+(the new vectors will have a different geometry). To switch models, run
+`mnema re-embed` after updating the env vars — see
+[Switching embedding models](#switching-embedding-models) below.
 
 ## OpenAI
 
@@ -85,6 +86,30 @@ export MNEMA_OLLAMA_URL=http://localhost:11434
 | `nomic-embed-text` | 768 |
 
 Pull the model once with `ollama pull nomic-embed-text`.
+
+## Switching embedding models
+
+When you change `MNEMA_EMBEDDING` / `MNEMA_EMBEDDING_MODEL`, existing
+vectors were produced by the old model and have the wrong geometry (and
+possibly a different dimension). Re-embed everything:
+
+```bash
+# 1. Reinstall with the new extra (e.g. openai)
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="chroma,openai" bash
+
+# 2. Switch the config
+export MNEMA_EMBEDDING=openai
+export MNEMA_EMBEDDING_MODEL=text-embedding-3-small
+export MNEMA_OPENAI_API_KEY=sk-...
+
+# 3. Re-embed every memory with the new model
+mnema re-embed
+```
+
+This is safe to interrupt and re-run — `mnema re-embed` processes memories
+in batches and just re-embeds everything again on the next run. Restrict to
+a scope with `--scope`, or tune the batch size with `--batch-size`.
 
 ## Choosing
 

@@ -288,6 +288,36 @@ async def cmd_import(args: argparse.Namespace, svc: MemoryService) -> int:
     return 0
 
 
+async def cmd_reembed(args: argparse.Namespace, svc: MemoryService) -> int:
+    """Re-embed all memories with the currently configured embedding provider.
+
+    Use after switching ``MNEMA_EMBEDDING`` / ``MNEMA_EMBEDDING_MODEL`` so
+    existing vectors match the new model.
+    """
+    total_before = await svc.backend.count()
+    if total_before == 0:
+        print("No memories to re-embed.")
+        return 0
+
+    provider = getattr(svc.embedding_provider, "display_name", svc.embedding_provider.name)
+    dim = svc.embedding_dim
+    print(
+        f"Re-embedding {total_before} memories with {provider} (dim={dim})…"
+    )
+
+    def _progress(done: int, total: int) -> None:
+        pct = (done * 100 // total) if total else 0
+        print(f"  {done}/{total} ({pct}%)", flush=True)
+
+    n = await svc.reembed(
+        scope=args.scope,
+        batch_size=args.batch_size,
+        on_progress=_progress,
+    )
+    print(f"✓ re-embedded {n} memories")
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
@@ -397,6 +427,19 @@ def _build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("import", help="Import memories from JSON")
     sp.add_argument("-i", "--input", default="-", help="Input file (default: stdin)")
     sp.set_defaults(func=cmd_import)
+
+    # re-embed ------------------------------------------------------------
+    sp = sub.add_parser(
+        "re-embed",
+        help="Re-embed all memories with the current embedding model (after "
+        "switching MNEMA_EMBEDDING / MNEMA_EMBEDDING_MODEL)",
+        aliases=["reembed"],
+    )
+    sp.add_argument("--scope", default=None, help="Restrict to a scope")
+    sp.add_argument(
+        "--batch-size", type=int, default=50, help="Embed batch size (default 50)"
+    )
+    sp.set_defaults(func=cmd_reembed)
 
     return p
 
