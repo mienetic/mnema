@@ -23,6 +23,47 @@ beyond the current turn:
 **Do not** use Mnema for transient, single-conversation details (the current
 file being edited, today's error message). Those belong in context, not memory.
 
+## ⚡ Proactive memory workflow (important)
+
+Don't wait to be asked. Use memory proactively in every conversation:
+
+### 1. Auto-recall — at the START of a substantive task
+
+Before answering any non-trivial question, **search memory first** to see if
+you already know something relevant:
+
+```
+mnema_search("<the user's question or task topic>")
+```
+
+- If you find relevant memories → weave them into your answer, cite by id.
+- If nothing relevant → proceed normally. Don't force a connection that isn't there.
+
+This is what makes memory feel "real" to the user — they don't have to ask
+"do you remember…?", you just know.
+
+### 2. Auto-remember — when a durable fact APPEARS
+
+Whenever the conversation reveals a durable fact (preference, decision, config
+value, relationship), store it **immediately** — don't wait until the end:
+
+```
+mnema_remember("<the fact>", tags=[...], importance=N, scope="user:...")
+```
+
+Signals that a fact is durable:
+- "I always…" / "I prefer…" / "I use…" → preference (importance 5–8)
+- "We decided to…" / "Let's go with…" → decision (importance 7–9)
+- "My API key is…" / "the prod URL is…" → credential/config (importance 8–10)
+- "Alice is my manager" / "Bob handles infra" → relationship (importance 5)
+
+### 3. Periodically — keep the store healthy
+
+- At the end of a long session, run `mnema_summarize` on busy scopes to
+  condense clutter into summary memories.
+- Run `mnema_apply_decay` (dry-run first) every few weeks to surface
+  low-value memories for forgetting.
+
 ## Tools
 
 ### Writing memories
