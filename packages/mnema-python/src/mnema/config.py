@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from mnema.errors import ConfigError
 
 BackendName = Literal["chroma", "qdrant", "sqlite_vec"]
-EmbeddingName = Literal["local", "openai"]
+EmbeddingName = Literal["local", "openai", "ollama"]
 TransportName = Literal["stdio", "http"]
 
 
@@ -75,7 +75,10 @@ class MnemaConfig(BaseSettings):
         default=None,
         description="Optional OpenAI-compatible base URL (Azure, local proxies, etc.)",
     )
-
+    ollama_url: str = Field(
+        default="http://localhost:11434",
+        description="Ollama server URL (only used when embedding='ollama')",
+    )
     # --- Behavior ----------------------------------------------------------
     default_scope: str = Field(
         default="global",

@@ -1,12 +1,13 @@
 # Embedding providers
 
-Mnema converts text to vectors via a pluggable provider. Two ship out of
+Mnema converts text to vectors via a pluggable provider. Three ship out of
 the box; more are welcome (see CONTRIBUTING).
 
 | Provider | Mode | Dim | Needs API key? | Install extra |
 |---|---|---|---|---|
 | **sentence-transformers** (default) | local, offline | 384 | no | `[local]` |
 | **OpenAI** | API | 1536 / 3072 | yes | `[openai]` |
+| **Ollama** | local server | model-dependent (e.g. 768) | no | `[ollama]` |
 
 ## sentence-transformers (default)
 
@@ -64,9 +65,32 @@ export MNEMA_OPENAI_API_KEY=sk-...
 | `text-embedding-3-large` | 3072 | $0.13 |
 | `text-embedding-ada-002` | 1536 | legacy |
 
+## Ollama
+
+Uses [Ollama](https://ollama.com)'s local embedding API (e.g. `nomic-embed-text`)
+so embeddings run fully locally — without loading a model in-process. Great
+when you already run Ollama for chat models and want to share the GPU/CPU.
+
+Install: nothing extra is required (httpx is a core dependency). Just point
+Mnema at your Ollama server:
+
+```bash
+export MNEMA_EMBEDDING=ollama
+export MNEMA_EMBEDDING_MODEL=nomic-embed-text
+export MNEMA_OLLAMA_URL=http://localhost:11434
+```
+
+| Model | Dim |
+|---|---|
+| `nomic-embed-text` | 768 |
+
+Pull the model once with `ollama pull nomic-embed-text`.
+
 ## Choosing
 
 - **Default to local** for single-user / offline / privacy-sensitive setups.
+- **Use Ollama** if you already run an Ollama server and want to share its
+  model cache, or want to avoid loading a model in-process.
 - **Use OpenAI** when you want lower per-request latency under load, or
   when running in a constrained environment where loading a model is
   expensive, or when you need top-tier multilingual quality.

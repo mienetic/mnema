@@ -414,6 +414,7 @@ See [docs/backends.md](docs/backends.md) for full details.
 |---|---|---|---|
 | **sentence-transformers** (default) | `local` | Offline (CPU/GPU) | 384 (`all-MiniLM-L6-v2`) |
 | **OpenAI** | `openai` | API (requires key) | 1536 (`text-embedding-3-small`) |
+| **Ollama** | `ollama` | Local server | 768 (`nomic-embed-text`) |
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \

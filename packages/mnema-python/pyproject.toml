@@ -54,6 +54,9 @@ sqlite_vec = ["sqlite-vec>=0.1.6"]
 local = ["sentence-transformers>=2.7"]
 # OpenAI embeddings (optional).
 openai = ["openai>=1.40"]
+# Ollama embeddings (optional; httpx is already a core dep, so this extra
+# exists for discoverability and to keep the install matrix explicit).
+ollama = []
 # Everything most users will want (Chroma backend + local embeddings).
 default = [
     "chromadb>=0.5",
