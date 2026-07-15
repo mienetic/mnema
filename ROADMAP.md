@@ -27,6 +27,8 @@ runs as an MCP server or a CLI, and gives agents durable, searchable memory.
 | ✅ | `mnema re-embed` — migrate memories when switching embedding model | done |
 | ✅ | `mnema --doctor --fix` — auto-remediate common setup problems | done |
 | ✅ | Auto-recall / auto-remember prompt hooks (`SKILL.md` + `remember_this`) | done |
+| ✅ | `mnema backup` / `mnema restore` — portable snapshots | done |
+| ✅ | `mnema eval` — recall evaluation harness (recall@5 = 100%, MRR = 1.0) | done |
 | ✅ | One-line installer (`curl … \| bash`) + `mnema-update` | done |
 | ✅ | Per-agent setup guides (Claude Desktop/Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode) | done |
 | ✅ | End-to-end tested (86 tests + manual CLI/MCP smoke test) | done |
@@ -62,7 +64,6 @@ The "wouldn't it be cool if" tier. Pursued only when Phase 1–2 validate demand
 |---|---|---|
 | 💭 | **Memory graph** — link memories and traverse relationships | considering |
 | 💭 | **Smart forgetting** — optional LLM-assisted decay decisions | considering |
-| 💭 | **Eval harness** — runnable version of `docs/evaluations.xml` measuring recall quality | considering |
 | 💭 | **Benchmarks** vs Mem0, Zep, LangMem | considering |
 
 ---

@@ -51,6 +51,7 @@ _CLI_COMMANDS = {
     "import",
     "backup",
     "restore",
+    "eval",
     "re-embed",
     "reembed",
 }

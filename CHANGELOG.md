@@ -20,6 +20,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`mnema backup` / `mnema restore`** — create a portable `.tar.gz` archive
   of all memories (+ manifest with backend/embedding metadata) and restore
   from it. Warns if the backup's backend differs from the current one. ([#12](https://github.com/mienetic/mnema/issues/12))
+- **`mnema eval`** — recall evaluation harness. Seeds a curated dataset
+  (30 memories, 24 queries) and reports **recall@5 = 100%, MRR = 1.0** on
+  the default `all-MiniLM-L6-v2` model. Use it to prove Mnema works and to
+  guard against regressions. ([#15](https://github.com/mienetic/mnema/issues/15))
 - **Ollama embedding provider** — talk to a local Ollama server
   (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
   model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))

@@ -437,6 +437,45 @@ async def cmd_reembed(args: argparse.Namespace, svc: MemoryService) -> int:
     return 0
 
 
+async def cmd_eval(args: argparse.Namespace, svc: MemoryService) -> int:
+    """Run the recall evaluation harness.
+
+    Seeds the store with a curated dataset (unless --no-seed), asks
+    natural-language queries, and reports recall@k + MRR.
+    """
+    from mnema.eval_harness import run_eval
+
+    report = await run_eval(svc, k=args.k, seed=not args.no_seed)
+    if args.json:
+        import json as _json
+
+        payload = {
+            "summary": report.summary(),
+            "recall_at_k": report.recall_at_k,
+            "mrr": report.mrr,
+            "avg_score": report.avg_score,
+            "total_queries": report.total_queries,
+            "memory_count": report.memory_count,
+            "elapsed_seconds": report.elapsed_seconds,
+            "k": report.k,
+            "hits": [
+                {
+                    "query": h.query,
+                    "expected": h.expected,
+                    "found": h.found,
+                    "rank": h.rank,
+                    "score": h.score,
+                }
+                for h in report.hits
+            ],
+        }
+        print(_json.dumps(payload, indent=2))
+    else:
+        print(report.detail())
+    # Exit 0 even on misses — eval is informational, not a CI gate.
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
@@ -565,6 +604,20 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     sp.add_argument("input", help="Backup file (.tar.gz)")
     sp.set_defaults(func=cmd_restore)
+
+    # eval ----------------------------------------------------------------
+    sp = sub.add_parser(
+        "eval",
+        help="Run the recall evaluation harness (recall@k + MRR)",
+    )
+    sp.add_argument("-k", type=int, default=5, help="cutoff for recall@k (default 5)")
+    sp.add_argument(
+        "--no-seed",
+        action="store_true",
+        help="Don't seed the dataset; eval the store as-is",
+    )
+    sp.add_argument("--json", action="store_true", help="Output as JSON")
+    sp.set_defaults(func=cmd_eval)
 
     # re-embed ------------------------------------------------------------
     sp = sub.add_parser(
