@@ -268,6 +268,125 @@ async def cmd_export(args: argparse.Namespace, svc: MemoryService) -> int:
     return 0
 
 
+async def cmd_backup(args: argparse.Namespace, svc: MemoryService) -> int:
+    """Create a portable backup (.tar.gz) of the memory store.
+
+    The backup bundles:
+      - memories.json  (the export payload)
+      - manifest.json  (backend, embedding, version, timestamp)
+
+    Restore with `mnema restore <file>`.
+    """
+    import io
+    import tarfile
+    import time
+
+    config = svc.config
+    records = [r.model_dump(mode="json") async for r in svc.backend.iter_all()]
+    export_payload = {
+        "version": __version__,
+        "backend": config.backend,
+        "embedding": config.embedding,
+        "embedding_model": config.embedding_model,
+        "count": len(records),
+        "memories": records,
+    }
+    manifest = {
+        "mnema_version": __version__,
+        "backend": config.backend,
+        "embedding": config.embedding,
+        "embedding_model": config.embedding_model,
+        "embedding_dim": svc.embedding_dim,
+        "memory_count": len(records),
+        "created_at": time.time(),
+    }
+
+    out_path = args.output
+    if not out_path:
+        ts = time.strftime("%Y%m%d-%H%M%S")
+        out_path = f"mnema-backup-{ts}.tar.gz"
+    elif not out_path.endswith((".tar.gz", ".tgz")):
+        out_path = out_path + ".tar.gz"
+
+    mem_json = json.dumps(export_payload, indent=2, default=str).encode()
+    man_json = json.dumps(manifest, indent=2).encode()
+    with tarfile.open(out_path, "w:gz") as tar:
+        info = tarfile.TarInfo(name="memories.json")
+        info.size = len(mem_json)
+        tar.addfile(info, io.BytesIO(mem_json))
+        info = tarfile.TarInfo(name="manifest.json")
+        info.size = len(man_json)
+        tar.addfile(info, io.BytesIO(man_json))
+
+    print(f"✓ backed up {len(records)} memories → {out_path}")
+    print(f"  backend={config.backend}  embedding={config.embedding}:{config.embedding_model}")
+    print(f"  restore with: mnema restore {out_path}")
+    return 0
+
+
+async def cmd_restore(args: argparse.Namespace, svc: MemoryService) -> int:
+    """Restore memories from a backup (.tar.gz) created by `mnema backup`."""
+    import tarfile
+
+    in_path = args.input
+    try:
+        tar = tarfile.open(in_path, "r:gz")  # noqa: SIM115
+    except (OSError, tarfile.TarError) as exc:
+        _print_err(f"could not open backup: {exc}")
+        return 1
+
+    try:
+        # Read manifest first (informational).
+        try:
+            man_file = tar.extractfile("manifest.json")
+            manifest = json.loads(man_file.read()) if man_file else {}
+            if manifest:
+                print(
+                    f"Backup: mnema {manifest.get('mnema_version', '?')}, "
+                    f"{manifest.get('memory_count', '?')} memories, "
+                    f"backend={manifest.get('backend', '?')}, "
+                    f"embedding={manifest.get('embedding', '?')}:{manifest.get('embedding_model', '?')}"
+                )
+                cur_backend = svc.config.backend
+                bk_backend = manifest.get("backend")
+                if bk_backend and bk_backend != cur_backend:
+                    _print_err(
+                        f"backup was made with backend '{bk_backend}' but the "
+                        f"current backend is '{cur_backend}'. Memories will still "
+                        f"restore, but vector geometry may differ if the embedding "
+                        f"model changed — run `mnema re-embed` after."
+                    )
+        except KeyError:
+            manifest = {}
+
+        # Read memories.json.
+        try:
+            mem_file = tar.extractfile("memories.json")
+            if mem_file is None:
+                _print_err("backup is missing memories.json")
+                return 1
+            data = json.loads(mem_file.read())
+        except KeyError:
+            _print_err("backup is missing memories.json")
+            return 1
+    finally:
+        tar.close()
+
+    memories = data.get("memories", [])
+    n = 0
+    for m in memories:
+        await svc.remember(
+            m["text"],
+            scope=m.get("scope", svc.config.default_scope),
+            tags=m.get("tags", []),
+            importance=m.get("importance", Importance.NORMAL),
+            metadata=m.get("metadata", {}),
+        )
+        n += 1
+    print(f"✓ restored {n} memories from {in_path}")
+    return 0
+
+
 async def cmd_import(args: argparse.Namespace, svc: MemoryService) -> int:
     if args.input == "-":
         text = sys.stdin.read()
@@ -427,6 +546,25 @@ def _build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("import", help="Import memories from JSON")
     sp.add_argument("-i", "--input", default="-", help="Input file (default: stdin)")
     sp.set_defaults(func=cmd_import)
+
+    # backup --------------------------------------------------------------
+    sp = sub.add_parser(
+        "backup",
+        help="Create a portable .tar.gz backup of all memories (+ manifest)",
+    )
+    sp.add_argument(
+        "-o", "--output", default=None,
+        help="Output file (default: mnema-backup-YYYYMMDD-HHMMSS.tar.gz)",
+    )
+    sp.set_defaults(func=cmd_backup)
+
+    # restore -------------------------------------------------------------
+    sp = sub.add_parser(
+        "restore",
+        help="Restore memories from a backup created by `mnema backup`",
+    )
+    sp.add_argument("input", help="Backup file (.tar.gz)")
+    sp.set_defaults(func=cmd_restore)
 
     # re-embed ------------------------------------------------------------
     sp = sub.add_parser(

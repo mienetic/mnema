@@ -17,6 +17,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `MNEMA_EMBEDDING_MODEL`. Safe to interrupt and re-run. ([#9](https://github.com/mienetic/mnema/issues/9))
 - **`mnema --doctor --fix`** — attempts automatic remediation (creates a
   missing data directory, suggests the exact fix for a missing API key). ([#2](https://github.com/mienetic/mnema/issues/2))
+- **`mnema backup` / `mnema restore`** — create a portable `.tar.gz` archive
+  of all memories (+ manifest with backend/embedding metadata) and restore
+  from it. Warns if the backup's backend differs from the current one. ([#12](https://github.com/mienetic/mnema/issues/12))
 - **Ollama embedding provider** — talk to a local Ollama server
   (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
   model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))

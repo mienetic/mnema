@@ -25,7 +25,7 @@
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
 - **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
-- **🧪 Well-tested** — 86 tests across pure-function unit tests + a backend matrix that runs against every supported store.
+- **🧪 Well-tested** — 92 tests across pure-function unit tests + a backend matrix that runs against every supported store.
 
 ---
 
@@ -321,9 +321,11 @@ mnema decay --threshold 0.1            # dry-run: list low-value memories
 mnema decay --threshold 0.1 --apply    # actually forget them
 mnema summarize session:abc            # plan how to condense a scope
 
-# Backup / migrate
+# Backup / migrate / snapshot
 mnema export -o memories.json
 mnema import -i memories.json
+mnema backup -o mnema-backup.tar.gz     # portable archive (memories + manifest)
+mnema restore mnema-backup.tar.gz
 
 # Re-embed after switching embedding model (see docs/embedding-providers.md)
 mnema re-embed
@@ -493,7 +495,7 @@ mnema/
 │       │   ├── summarize.py  # summarization planner
 │       │   ├── sdk.py        # programmatic SDK
 │       │   └── server.py     # FastMCP bootstrap
-│       └── tests/            # 86 tests (unit + backend matrix)
+│       └── tests/            # 92 tests (unit + backend matrix)
 ├── docker/                   # Dockerfile + compose
 ├── docs/                     # architecture, backends, deployment
 ├── examples/                 # client config examples
