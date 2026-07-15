@@ -8,38 +8,40 @@ Status legend: ✅ done · 🚧 in progress · 📋 planned · 💭 considering
 
 ---
 
-## Phase 1 — Make it usable and lovable ✅ (mostly done)
+## Phase 1 — Make it usable and lovable ✅ done
 
-The foundation works. The focus now is reducing friction so people can try
-Mnema in 30 seconds and trust it enough to keep installed.
+The foundation is complete and tested end-to-end. Mnema installs in one line,
+runs as an MCP server or a CLI, and gives agents durable, searchable memory.
 
 | | Item | Status |
 |---|---|---|
-| ✅ | Python MCP server (FastMCP) with 11 tools, 3 resources, 2 prompts | done |
+| ✅ | Python MCP server (FastMCP) with 11 tools, 3 resources, 3 prompts | done |
 | ✅ | Pluggable backends: Chroma (default), Qdrant, sqlite-vec | done |
-| ✅ | Embedding providers: sentence-transformers (offline), OpenAI | done |
+| ✅ | Embedding providers: sentence-transformers (offline), OpenAI, Ollama | done |
 | ✅ | Hybrid search: vector similarity + tag overlap + decay scoring | done |
 | ✅ | Summarization planner (LLM-free; the calling AI executes the plan) | done |
 | ✅ | Multi-user / multi-session via scope-based namespaces | done |
 | ✅ | Programmatic Python SDK (`MemoryClient` / `SyncMemoryClient`) | done |
+| ✅ | `mnema` CLI for terminal use without an MCP client (15 subcommands) | done |
+| ✅ | Import / export (`mnema export`, `mnema import`) | done |
+| ✅ | `mnema re-embed` — migrate memories when switching embedding model | done |
+| ✅ | `mnema --doctor --fix` — auto-remediate common setup problems | done |
+| ✅ | Auto-recall / auto-remember prompt hooks (`SKILL.md` + `remember_this`) | done |
 | ✅ | One-line installer (`curl … \| bash`) + `mnema-update` | done |
-| ✅ | Per-agent setup guides (Claude Desktop/Code, Cursor, Zed, Cline, Continue, Windsurf) | done |
-| ✅ | `mnema` CLI for terminal use without an MCP client | done |
-| ✅ | Import / export (`mnema export > memories.json`, `mnema import`) | done |
-| 📋 | `mnema doctor --fix` that suggests concrete fixes | planned |
-| 📋 | Auto-recall / auto-remember prompt hooks (improve `SKILL.md`) | planned |
+| ✅ | Per-agent setup guides (Claude Desktop/Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode) | done |
+| ✅ | End-to-end tested (86 tests + manual CLI/MCP smoke test) | done |
 
-## Phase 2 — Grow the ecosystem 📋
+## Phase 2 — Grow the ecosystem 📋 (starting)
 
-Once the core is loved by a small group, expand to more stacks and stores.
+Now that the core works and has its first contributors, expand to more stacks
+and stores.
 
 | | Item | Status |
 |---|---|---|
+| 🚧 | More backends: pgvector, LanceDB, Weaviate | pgvector claimed by @Adiiiipawar |
+| 🚧 | More embedding providers: Cohere, Voyage, Nomic | offered to @jaineel132 |
 | 📋 | **Web dashboard** — browse / search / forget memories in a browser | planned |
-| 📋 | More backends: pgvector, LanceDB, Weaviate | planned |
-| 📋 | More embedding providers: Ollama (local!), Cohere, Voyage, Nomic | planned |
 | 📋 | TypeScript MCP server (`packages/mnema-ts/`) | planned |
-| 📋 | Migration helper: re-embed all memories when switching embedding model | planned |
 
 ## Phase 3 — Production-grade 📋
 
