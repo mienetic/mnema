@@ -41,6 +41,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   example configs, Dockerfile, and error messages point at the one-line
   installer instead of `pip install mnema-mcp`.
 
+### Fixed
+- **sqlite_vec backend path resolution** — `os.makedirs(dirname)` failed with
+  `FileExistsError` when `backend_path` was a file whose name collided with a
+  parent path component (e.g. `/data/data`). Now uses `os.path.abspath()` to
+  compute the parent directory correctly.
+- **Importance values 2–4, 6–7, 9 crashed** — `Importance` is an `IntEnum`
+  with only named levels (1/5/8/10), so `--importance 9` raised `ValueError`.
+  Added `_coerce_importance()` that snaps any int in [1, 10] to the nearest
+  named level. Applied in both `remember()` and `update()`.
+- **Installer backend inference** — installing with `MNEMA_EXTRAS=sqlite_vec,local`
+  still defaulted `MNEMA_BACKEND=chroma`, so `--doctor` reported a missing
+  `chromadb`. The installer now infers the default backend from the chosen
+  extras and computes the right `backend_path` per backend
+  (sqlite_vec → `data/mnema.db`, qdrant → `data/qdrant`, chroma → `data/`).
+
+  All three were found during end-to-end testing after v0.2.0.
+
 ### Planned
 - TypeScript MCP server (`packages/mnema-ts/`)
 - Web dashboard for browsing memories
