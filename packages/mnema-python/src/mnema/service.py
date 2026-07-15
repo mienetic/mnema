@@ -27,6 +27,21 @@ from mnema.models import (
 from mnema.summarize import SummarizationPlan, plan_summarization
 
 
+def _coerce_importance(value: int | Importance) -> Importance:
+    """Convert any int 1–10 to the nearest :class:`Importance` level.
+
+    The ``Importance`` enum only defines named levels (1, 5, 8, 10), but
+    users and tools can pass any integer in [1, 10]. We snap to the closest
+    named level so the value is always a valid enum member.
+    """
+    if isinstance(value, Importance):
+        return value
+    raw = max(1, min(10, int(value)))
+    # Snap to the nearest named level.
+    levels = sorted(Importance, key=lambda v: abs(int(v) - raw))
+    return levels[0]
+
+
 class MemoryService:
     """Coordinates backend, embeddings, decay, and summarization.
 
@@ -83,8 +98,7 @@ class MemoryService:
     ) -> MemoryRecord:
         """Embed and persist a new memory, returning the stored record."""
         scope_val = self._scope(scope)
-        if isinstance(importance, int) and not isinstance(importance, Importance):
-            importance = Importance(int(importance))
+        importance = _coerce_importance(importance)
         vec = await self._embedding.embed_one(text)
         record = MemoryRecord(
             text=text,
@@ -168,7 +182,7 @@ class MemoryService:
             memory_id,
             text=text,
             tags=tags,
-            importance=int(importance) if importance is not None else None,
+            importance=int(_coerce_importance(importance)) if importance is not None else None,
             metadata=metadata,
             embedding=embedding,
         )

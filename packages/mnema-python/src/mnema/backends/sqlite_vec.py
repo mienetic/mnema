@@ -68,7 +68,12 @@ class SqliteVecBackend(VectorBackend):
             else:
                 import os
 
-                os.makedirs(os.path.dirname(config.backend_path) or ".", exist_ok=True)
+                # Ensure the *parent directory* of the SQLite file exists.
+                # `os.path.dirname("/a/b/data")` = "/a/b" which is correct; but
+                # if backend_path itself has no slash (e.g. "mnema.db"), dirname
+                # returns "" — fall back to ".".
+                parent = os.path.dirname(os.path.abspath(config.backend_path))
+                os.makedirs(parent, exist_ok=True)
                 self._conn = sqlite3.connect(
                     config.backend_path, check_same_thread=False
                 )
