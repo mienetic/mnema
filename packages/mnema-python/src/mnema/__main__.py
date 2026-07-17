@@ -55,6 +55,7 @@ _CLI_COMMANDS = {
     "dream",
     "re-embed",
     "reembed",
+    "serve",
 }
 
 

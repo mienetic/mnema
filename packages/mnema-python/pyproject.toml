@@ -57,18 +57,22 @@ openai = ["openai>=1.40"]
 # Ollama embeddings (optional; httpx is already a core dep, so this extra
 # exists for discoverability and to keep the install matrix explicit).
 ollama = []
+# REST API server (FastAPI + uvicorn) exposed via `mnema serve`.
+api = ["fastapi>=0.110", "uvicorn>=0.29"]
 # Everything most users will want (Chroma backend + local embeddings).
 default = [
     "chromadb>=0.5",
     "sentence-transformers>=2.7",
 ]
-# All backends + embedding providers.
+# All backends + embedding providers + the REST API.
 all = [
     "chromadb>=0.5",
     "qdrant-client>=1.9",
     "sqlite-vec>=0.1.6",
     "sentence-transformers>=2.7",
     "openai>=1.40",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
 ]
 dev = [
     "pytest>=8.0",

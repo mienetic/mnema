@@ -476,6 +476,33 @@ async def cmd_eval(args: argparse.Namespace, svc: MemoryService) -> int:
     return 0
 
 
+def cmd_serve(args: argparse.Namespace, config: MnemaConfig) -> int:
+    """Run the REST API server (requires the 'api' extra).
+
+    Unlike the other command handlers this one is **synchronous**: it hands
+    control to uvicorn, which owns the event loop for the lifetime of the
+    server. The FastAPI app builds (and, on shutdown, tears down) its own
+    :class:`MemoryService` from ``config``.
+    """
+    try:
+        import uvicorn
+
+        from mnema.api.app import create_app
+    except ImportError:
+        _print_err(
+            "The REST API server requires the 'api' extra (fastapi + uvicorn). "
+            "Install it with:\n    uv pip install 'mnema-mcp[api]'"
+        )
+        return 2
+
+    host = args.host or config.http_host
+    port = args.port or config.http_port
+    app = create_app(config)
+    print(f"Serving Mnema REST API on http://{host}:{port}  (Ctrl-C to stop)")
+    uvicorn.run(app, host=host, port=port, log_level="info")
+    return 0
+
+
 async def cmd_dream(args: argparse.Namespace, svc: MemoryService) -> int:
     """Run a single dream cycle (decay-forget + summarize-plan).
 
@@ -660,6 +687,21 @@ def _build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--json", action="store_true", help="Output as JSON")
     sp.set_defaults(func=cmd_dream)
 
+    # serve ---------------------------------------------------------------
+    sp = sub.add_parser(
+        "serve",
+        help="Run the REST API server (requires the 'api' extra)",
+    )
+    sp.add_argument(
+        "--host", default=None,
+        help="Bind host (default: MNEMA_HTTP_HOST or 127.0.0.1)",
+    )
+    sp.add_argument(
+        "--port", type=int, default=None,
+        help="Bind port (default: MNEMA_HTTP_PORT or 8000)",
+    )
+    sp.set_defaults(func=cmd_serve)
+
     # re-embed ------------------------------------------------------------
     sp = sub.add_parser(
         "re-embed",
@@ -695,10 +737,11 @@ def run_cli(argv: list[str] | None = None) -> int:
         return 2
 
     func = args.func
-    # `doctor` is a sync handler shim; everything else is async.
+    # `serve` (and the `doctor` shim) are synchronous handlers that take the
+    # config directly; every other handler is async and gets a built service.
     if asyncio.iscoroutinefunction(func):
         return _run_async_handler(func, config, args)
-    return func(args, config)  # pragma: no cover - only the doctor shim
+    return func(args, config)  # pragma: no cover - blocking server / doctor shim
 
 
 def _run_async_handler(
