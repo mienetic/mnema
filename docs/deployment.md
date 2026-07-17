@@ -73,6 +73,32 @@ docker compose -f docker/docker-compose.yml up -d
 The compose file mounts a persistent volume for the embedded Chroma store.
 To use Qdrant instead, uncomment the `qdrant` service and set the env vars.
 
+## 4. REST API mode (`mnema serve`)
+
+For non-AI apps (dashboards, scripts, other services) that want to use
+Mnema over plain HTTP:
+
+```bash
+mnema serve --port 8000
+# REST API on http://localhost:8000
+```
+
+Endpoints: `GET/POST /memories`, `GET/PATCH/DELETE /memories/{id}`,
+`POST /search`, `POST /recall`, `GET /scopes`, `GET /stats`. See
+[`docs/architecture.md`](architecture.md#rest-api-layer-apiapppy) for the
+full list.
+
+This is what the **web dashboard** (#3) and **browser extension** (#20)
+build on.
+
+## Auto Dream (background consolidation)
+
+Enable with `MNEMA_DREAM_ENABLED=true` to have Mnema periodically forget
+decayed memories and plan summarization while idle — no manual maintenance
+needed. Tune the cycle with `MNEMA_DREAM_INTERVAL_SECONDS` (default 3600)
+and `MNEMA_DREAM_DECAY_THRESHOLD` (default 0.05). Run a single cycle
+manually with `mnema dream`.
+
 ## Resource sizing (rough)
 
 For the default local mode (`all-MiniLM-L6-v2` + Chroma):

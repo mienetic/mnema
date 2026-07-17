@@ -63,6 +63,12 @@ Signals that a fact is durable:
   condense clutter into summary memories.
 - Run `mnema_apply_decay` (dry-run first) every few weeks to surface
   low-value memories for forgetting.
+- Or let **Auto Dream** do both automatically: set `MNEMA_DREAM_ENABLED=true`
+  and Mnema will forget decayed + plan summarization in the background while
+  idle — like a brain consolidating memories during sleep. You can also run
+  a single cycle manually from the terminal: `mnema dream`.
+- **Backup regularly**: `mnema backup -o snapshot.tar.gz` creates a portable
+  archive you can restore later with `mnema restore snapshot.tar.gz`.
 
 ## Tools
 
