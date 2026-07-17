@@ -84,6 +84,12 @@ def run(config: MnemaConfig | None = None) -> None:
     ``http`` it serves on ``config.http_host:config.http_port``.
     """
     cfg = config or load_config()
+
+    from mnema.diagnostics import configure_logging, install_excepthook
+
+    configure_logging(cfg.log_level)
+    install_excepthook(cfg)
+
     mcp, _svc = create_server(cfg)
     if cfg.transport == "http":
         mcp.run(transport="streamable_http", host=cfg.http_host, port=cfg.http_port)

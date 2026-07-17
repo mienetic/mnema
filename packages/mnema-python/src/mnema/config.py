@@ -122,6 +122,16 @@ class MnemaConfig(BaseSettings):
     http_host: str = Field(default="127.0.0.1", description="Bind host for HTTP transport")
     http_port: int = Field(default=8000, description="Bind port for HTTP transport")
 
+    # --- Logging / diagnostics -------------------------------------------
+    log_level: str = Field(
+        default="WARNING",
+        description=(
+            "Logging level: DEBUG, INFO, WARNING (default), ERROR. "
+            "Set to DEBUG to see backend queries, embed latency, search "
+            "scores, etc. (useful when reporting bugs)."
+        ),
+    )
+
     # --- Auto Dream (background memory consolidation) --------------------
     dream_enabled: bool = Field(
         default=False,

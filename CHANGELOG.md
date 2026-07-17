@@ -35,6 +35,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `GET/PATCH/DELETE /memories/{id}`, `POST /search`, `POST /recall`,
   `GET /scopes`, `GET /stats`. Opens Mnema to non-AI apps. Contributed by
   [@Nitjsefnie](https://github.com/Nitjsefnie). ([#18](https://github.com/mienetic/mnema/issues/18), [#22](https://github.com/mienetic/mnema/pull/22))
+- **🐛 Friendly error reporting + debug logging** — unexpected crashes now
+  produce a pre-filled GitHub issue link (with version, backend, embedding,
+  traceback) so users can report bugs in one click. Expected errors
+  (`MnemaError` subclasses) print cleanly without the noise. Set
+  `MNEMA_LOG_LEVEL=DEBUG` for verbose logs (backend queries, embed latency,
+  search scores).
 - **Ollama embedding provider** — talk to a local Ollama server
   (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
   model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))

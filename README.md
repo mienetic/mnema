@@ -27,7 +27,8 @@
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
 - **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
 - **🌐 REST API** — `mnema serve` exposes all memory operations over plain HTTP (FastAPI) for non-AI apps.
-- **🧪 Well-tested** — 129 tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
+- **🧪 Well-tested** — 142 tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
+- **🐛 Friendly error reporting** — unexpected crashes produce a pre-filled GitHub issue link with full diagnostics (version, backend, embedding, traceback) so users can report bugs in one click. Set `MNEMA_LOG_LEVEL=DEBUG` for verbose logs.
 
 ---
 
@@ -405,6 +406,7 @@ All settings are environment-driven (or `.env`):
 | `MNEMA_DREAM_ENABLED` | `false` | Auto Dream background consolidation |
 | `MNEMA_DREAM_INTERVAL_SECONDS` | `3600` | Seconds between dream cycles |
 | `MNEMA_DREAM_DECAY_THRESHOLD` | `0.05` | Decay cutoff for forgetting during dreams |
+| `MNEMA_LOG_LEVEL` | `WARNING` | `DEBUG` \| `INFO` \| `WARNING` \| `ERROR` — verbose logs for bug reports |
 
 ---
 

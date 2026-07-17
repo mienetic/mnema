@@ -736,6 +736,13 @@ def run_cli(argv: list[str] | None = None) -> int:
         _print_err(str(exc))
         return 2
 
+    # Set up logging + install a friendly crash handler so unexpected errors
+    # produce a pre-filled GitHub issue link instead of a raw traceback.
+    from mnema.diagnostics import configure_logging, install_excepthook
+
+    configure_logging(config.log_level)
+    install_excepthook(config)
+
     func = args.func
     # `serve` (and the `doctor` shim) are synchronous handlers that take the
     # config directly; every other handler is async and gets a built service.
