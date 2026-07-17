@@ -30,6 +30,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   for cluttered scopes. Enable with `MNEMA_DREAM_ENABLED=true`. Also
   available as `mnema dream` for a one-shot manual cycle. Inspired by the
   way the brain consolidates memories during sleep.
+- **`mnema serve` — REST API** — a thin FastAPI layer over `MemoryService`
+  exposing all memory operations over plain HTTP: `GET/POST /memories`,
+  `GET/PATCH/DELETE /memories/{id}`, `POST /search`, `POST /recall`,
+  `GET /scopes`, `GET /stats`. Opens Mnema to non-AI apps. Contributed by
+  [@Nitjsefnie](https://github.com/Nitjsefnie). ([#18](https://github.com/mienetic/mnema/issues/18), [#22](https://github.com/mienetic/mnema/pull/22))
 - **Ollama embedding provider** — talk to a local Ollama server
   (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
   model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))

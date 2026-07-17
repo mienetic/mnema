@@ -44,7 +44,7 @@ and stores.
 | 🚧 | More backends: pgvector, LanceDB, Weaviate | pgvector claimed by @Adiiiipawar, LanceDB by @Oneshot1123 |
 | 🚧 | More embedding providers: Cohere, Voyage, Nomic | claimed by @jaineel132 |
 | 🚧 | **Web dashboard** — browse / search / forget memories in a browser | claimed by @NEMEZIZ1234 |
-| 📋 | **REST API (non-MCP)** — `GET /memories`, `POST /search`, … so non-AI apps can use Mnema directly via FastAPI | planned · `good first issue` |
+| ✅ | **REST API (non-MCP)** — `GET /memories`, `POST /search`, … via FastAPI (`mnema serve`) | done by @Nitjsefnie (#22) |
 | 📋 | **Slack / Discord bot** — auto-remember facts from chat (`packages/mnema-bot/`) | planned |
 | 📋 | **Browser extension** — capture facts from web pages into Mnema | planned (depends on REST API) |
 | 📋 | TypeScript MCP server (`packages/mnema-ts/`) | planned (waiting for demand) |

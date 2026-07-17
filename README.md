@@ -26,7 +26,8 @@
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
 - **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
-- **🧪 Well-tested** — 113 tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
+- **🌐 REST API** — `mnema serve` exposes all memory operations over plain HTTP (FastAPI) for non-AI apps.
+- **🧪 Well-tested** — 129 tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
 
 ---
 
@@ -571,7 +572,7 @@ See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and
 - [Model Context Protocol](https://modelcontextprotocol.io) — the protocol that makes this possible.
 - [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec) — excellent open-source vector stores.
 - [sentence-transformers](https://www.sbert.net/) — offline embeddings for everyone.
-- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama embedding provider).
+- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama embedding provider), [@Nitjsefnie](https://github.com/Nitjsefnie) (REST API).
 
 ---
 
