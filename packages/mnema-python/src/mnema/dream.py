@@ -163,11 +163,17 @@ class Dreamer:
         # Run the first cycle soon after start (not immediately, to let the
         # server finish warming up), then on the configured interval.
         while not self._stop.is_set():
+            # Sleep until the interval elapses or stop() is called.
             try:
-                await asyncio.wait_for(self._stop.wait(), timeout=self._config.dream_interval_seconds)
+                await asyncio.wait_for(
+                    asyncio.shield(self._stop.wait()),
+                    timeout=self._config.dream_interval_seconds,
+                )
                 return  # stop was set during the sleep
-            except TimeoutError:
+            except (asyncio.TimeoutError, TimeoutError):
                 pass  # interval elapsed — time to dream
+            except asyncio.CancelledError:
+                return  # task was cancelled by stop()
 
             try:
                 report = await dream_once(self._service, self._config)
