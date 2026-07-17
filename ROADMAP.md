@@ -29,6 +29,7 @@ runs as an MCP server or a CLI, and gives agents durable, searchable memory.
 | ✅ | Auto-recall / auto-remember prompt hooks (`SKILL.md` + `remember_this`) | done |
 | ✅ | `mnema backup` / `mnema restore` — portable snapshots | done |
 | ✅ | `mnema eval` — recall evaluation harness (recall@5 = 100%, MRR = 1.0) | done |
+| ✅ | 🌙 Auto Dream — background memory consolidation (`MNEMA_DREAM_ENABLED=true`) | done |
 | ✅ | One-line installer (`curl … \| bash`) + `mnema-update` | done |
 | ✅ | Per-agent setup guides (Claude Desktop/Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode) | done |
 | ✅ | End-to-end tested (86 tests + manual CLI/MCP smoke test) | done |

@@ -48,9 +48,18 @@ def create_server(
 
     @asynccontextmanager
     async def lifespan(_app):
+        # Start the Auto Dream background scheduler if enabled.
+        dreamer = None
+        if cfg.dream_enabled:
+            from mnema.dream import Dreamer
+
+            dreamer = Dreamer(svc, cfg)
+            await dreamer.start()
         try:
             yield {"service": svc}
         finally:
+            if dreamer is not None:
+                await dreamer.stop()
             if own_service:
                 await svc.aclose()
 

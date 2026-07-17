@@ -52,6 +52,7 @@ _CLI_COMMANDS = {
     "backup",
     "restore",
     "eval",
+    "dream",
     "re-embed",
     "reembed",
 }

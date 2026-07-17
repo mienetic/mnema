@@ -24,6 +24,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   (30 memories, 24 queries) and reports **recall@5 = 100%, MRR = 1.0** on
   the default `all-MiniLM-L6-v2` model. Use it to prove Mnema works and to
   guard against regressions. ([#15](https://github.com/mienetic/mnema/issues/15))
+- **🌙 Auto Dream** — optional background scheduler that consolidates the
+  memory store while the server is idle. Each cycle forgets decayed
+  memories (below `MNEMA_DREAM_DECAY_THRESHOLD`) and plans summarization
+  for cluttered scopes. Enable with `MNEMA_DREAM_ENABLED=true`. Also
+  available as `mnema dream` for a one-shot manual cycle. Inspired by the
+  way the brain consolidates memories during sleep.
 - **Ollama embedding provider** — talk to a local Ollama server
   (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
   model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))

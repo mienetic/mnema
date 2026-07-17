@@ -476,6 +476,38 @@ async def cmd_eval(args: argparse.Namespace, svc: MemoryService) -> int:
     return 0
 
 
+async def cmd_dream(args: argparse.Namespace, svc: MemoryService) -> int:
+    """Run a single dream cycle (decay-forget + summarize-plan).
+
+    This is the manual equivalent of what the Auto Dream background scheduler
+    does automatically when ``MNEMA_DREAM_ENABLED=true``.
+    """
+    from mnema.dream import dream_once
+
+    report = await dream_once(svc, svc.config)
+    if args.json:
+        import json as _json
+
+        payload = {
+            "summary": report.summary(),
+            "memories_forgotten": report.memories_forgotten,
+            "memory_count_before": report.memory_count_before,
+            "memory_count_after": report.memory_count_after,
+            "scopes_summarized": report.scopes_summarized,
+            "elapsed_seconds": report.elapsed_seconds,
+        }
+        print(_json.dumps(payload, indent=2))
+    else:
+        print(f"✓ {report.summary()}")
+        if report.memories_forgotten:
+            print(f"  forgot {report.memories_forgotten} low-value memories")
+        if report.scopes_summarized:
+            print(f"  summarized scopes: {', '.join(report.scopes_summarized)}")
+        if not report.memories_forgotten and not report.scopes_summarized:
+            print("  nothing to dream about — store is already tidy.")
+    return 0
+
+
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
@@ -618,6 +650,15 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     sp.add_argument("--json", action="store_true", help="Output as JSON")
     sp.set_defaults(func=cmd_eval)
+
+    # dream ----------------------------------------------------------------
+    sp = sub.add_parser(
+        "dream",
+        help="Run a single dream cycle: forget decayed memories + plan "
+        "summarization (the manual version of Auto Dream)",
+    )
+    sp.add_argument("--json", action="store_true", help="Output as JSON")
+    sp.set_defaults(func=cmd_dream)
 
     # re-embed ------------------------------------------------------------
     sp = sub.add_parser(

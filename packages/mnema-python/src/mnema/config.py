@@ -122,6 +122,35 @@ class MnemaConfig(BaseSettings):
     http_host: str = Field(default="127.0.0.1", description="Bind host for HTTP transport")
     http_port: int = Field(default=8000, description="Bind port for HTTP transport")
 
+    # --- Auto Dream (background memory consolidation) --------------------
+    dream_enabled: bool = Field(
+        default=False,
+        description=(
+            "Enable the Auto Dream background scheduler. When True, Mnema "
+            "periodically summarizes and forgets low-value memories while "
+            "the server is running — like a brain consolidating memories "
+            "during sleep."
+        ),
+    )
+    dream_interval_seconds: float = Field(
+        default=3600.0,
+        description="Seconds between Auto Dream cycles (default: 1 hour).",
+        gt=0,
+    )
+    dream_decay_threshold: float = Field(
+        default=0.05,
+        description="Decay score at or below which a memory is forgotten during dreaming.",
+        ge=0,
+        le=1,
+    )
+    dream_summarize_scopes: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Scopes to summarize during dreaming. Empty = all scopes. "
+            "Summarization only plans — the calling agent must execute."
+        ),
+    )
+
     @field_validator("vector_weight", "keyword_weight", "decay_weight")
     @classmethod
     def _check_weights(cls, v: float) -> float:
