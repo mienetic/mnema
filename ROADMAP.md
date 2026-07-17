@@ -41,10 +41,14 @@ and stores.
 
 | | Item | Status |
 |---|---|---|
-| 🚧 | More backends: pgvector, LanceDB, Weaviate | pgvector claimed by @Adiiiipawar |
-| 🚧 | More embedding providers: Cohere, Voyage, Nomic | offered to @jaineel132 |
-| 📋 | **Web dashboard** — browse / search / forget memories in a browser | planned |
-| 📋 | TypeScript MCP server (`packages/mnema-ts/`) | planned |
+| 🚧 | More backends: pgvector, LanceDB, Weaviate | pgvector claimed by @Adiiiipawar, LanceDB by @Oneshot1123 |
+| 🚧 | More embedding providers: Cohere, Voyage, Nomic | claimed by @jaineel132 |
+| 🚧 | **Web dashboard** — browse / search / forget memories in a browser | claimed by @NEMEZIZ1234 |
+| 📋 | **REST API (non-MCP)** — `GET /memories`, `POST /search`, … so non-AI apps can use Mnema directly via FastAPI | planned · `good first issue` |
+| 📋 | **Slack / Discord bot** — auto-remember facts from chat (`packages/mnema-bot/`) | planned |
+| 📋 | **Browser extension** — capture facts from web pages into Mnema | planned (depends on REST API) |
+| 📋 | TypeScript MCP server (`packages/mnema-ts/`) | planned (waiting for demand) |
+| 📋 | Submit to the [MCP server registry](https://github.com/modelcontextprotocol/servers) | planned (maintainer task) |
 
 ## Phase 3 — Production-grade 📋
 
