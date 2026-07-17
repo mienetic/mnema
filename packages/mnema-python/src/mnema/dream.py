@@ -147,11 +147,13 @@ class Dreamer:
 
     async def stop(self) -> None:
         """Cancel the background loop and wait for it to finish."""
+        import contextlib
+
         if self._task is None:
             return
         self._stop.set()
         self._task.cancel()
-        with __import__("contextlib").suppress(asyncio.CancelledError):
+        with contextlib.suppress(asyncio.CancelledError):
             await self._task
         self._task = None
         logger.info("Auto Dream stopped.")

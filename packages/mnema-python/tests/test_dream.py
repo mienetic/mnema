@@ -94,12 +94,16 @@ class TestDreamer:
             await svc.remember("ephemeral", importance=1)
             assert await svc.backend.count() == 1
 
-            svc.config.dream_interval_seconds = 0.05  # very fast for testing
+            svc.config.dream_interval_seconds = 0.01  # very fast for testing
             svc.config.dream_decay_threshold = 1.0  # forget everything
 
             dreamer = Dreamer(svc, svc.config)
             await dreamer.start()
-            await asyncio.sleep(0.2)
+            # Poll for up to 2 seconds for a cycle to complete (CI can be slow).
+            for _ in range(200):
+                if dreamer.last_report is not None:
+                    break
+                await asyncio.sleep(0.01)
             await dreamer.stop()
 
             assert dreamer.last_report is not None
