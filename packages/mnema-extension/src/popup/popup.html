@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Remember this — Mnema</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>🧠 Remember this</h1>
+      <a id="open-options" href="#">Settings</a>
+    </header>
+
+    <form id="capture-form">
+      <label for="text">Memory</label>
+      <textarea id="text" name="text" rows="6" required
+                placeholder="What should Mnema remember?"></textarea>
+      <p class="hint"><span id="char-count">0</span> / 32000 characters</p>
+
+      <label for="scope">Scope</label>
+      <input id="scope" name="scope" type="text" placeholder="user:alice (blank = server default)" />
+
+      <label for="tags">Tags</label>
+      <input id="tags" name="tags" type="text" placeholder="docs, api (comma separated)" />
+
+      <label for="importance">Importance: <output id="importance-value">5</output></label>
+      <input id="importance" name="importance" type="range" min="1" max="10" step="1" value="5" />
+      <p class="hint">1 = fades fast · 5 = normal · 8 = high · 10 = critical</p>
+
+      <label class="checkbox">
+        <input id="include-source" type="checkbox" checked />
+        Save the page URL and title as metadata
+      </label>
+
+      <div class="actions">
+        <button id="save" type="submit">Save to Mnema</button>
+        <button id="cancel" type="button" class="secondary">Cancel</button>
+      </div>
+    </form>
+
+    <p id="status" role="status" aria-live="polite" hidden></p>
+    <p id="server-line" class="hint server-line"></p>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

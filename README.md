@@ -510,6 +510,7 @@ mnema/
 │       │   ├── sdk.py        # programmatic SDK
 │       │   └── server.py     # FastMCP bootstrap
 │       └── tests/            # 113 tests (unit + backend matrix + eval + dream)
+│   └── mnema-extension/      # browser extension (MV3) — "Remember this" over the REST API
 ├── docker/                   # Dockerfile + compose
 ├── docs/                     # architecture, backends, deployment
 ├── examples/                 # client config examples
