@@ -3,8 +3,8 @@
 Thanks for your interest in improving Mnema! 🧠
 
 This project welcomes contributions of all kinds — bug reports, fixes, new
-backends/embedding providers, docs, and evals. The bar is "make AI memory
-better for everyone."
+backends/embedding providers, REST API routes, CLI commands, docs, and evals.
+The bar is "make AI memory better for everyone."
 
 ## Code of conduct
 
@@ -18,30 +18,42 @@ apply.
 git clone https://github.com/mienetic/mnema.git
 cd mnema/packages/mnema-python
 
-# Install with all optional deps + dev tooling
-uv pip install -e '.[all,dev]'
+# Create a venv and install with all optional deps + dev tooling
+uv venv --python 3.11 .venv
+VIRTUAL_ENV=.venv uv pip install -e '.[all,dev]'
 
 # Verify
-pytest
-ruff check .
-mypy src/mnema
+.venv/bin/ruff check src/ tests/
+.venv/bin/pytest
+.venv/bin/mypy src/mnema    # informational — see note below
 ```
 
 You'll need Python 3.10+ and (recommended) [`uv`](https://docs.astral.sh/uv/).
 The test suite automatically skips backend tests whose optional dependency
 isn't installed, so a minimal install still runs the core + service tests.
 
+> **Note on mypy:** type-checking is currently *informational* — it won't
+> block your PR. We're working toward full annotations. Run it, fix what's
+> easy, but don't stress about every error.
+
 ## Project layout
 
-- `src/mnema/` — the package
-  - `backends/` — vector stores (one file each: `chroma.py`, `qdrant.py`, `sqlite_vec.py`)
-  - `embeddings/` — embedding providers (`sentence_transformers.py`, `openai.py`)
-  - `tools/` — the 10 MCP tools, one concern per file
-  - `service.py` — orchestration (the only place backends + embeddings meet)
-  - `decay.py`, `summarize.py` — pure functions, easy to unit-test
-  - `sdk.py` — programmatic Python client
-  - `server.py` — FastMCP bootstrap + lifespan
-- `tests/` — pytest; `fakes.py` has the in-memory backend + hashing embedding
+```
+src/mnema/
+├── backends/          # vector stores: chroma.py, qdrant.py, sqlite_vec.py
+├── embeddings/        # embedding providers: sentence_transformers.py, openai.py, ollama.py
+├── tools/             # 11 MCP tools, one concern per file
+├── api/               # REST API (FastAPI) — `mnema serve`
+├── cli.py             # terminal CLI (20 subcommands: add, recall, search, dream, eval, …)
+├── service.py         # orchestration (the only place backends + embeddings meet)
+├── decay.py           # forgetting curve (pure functions)
+├── summarize.py       # summarization planner (pure functions)
+├── dream.py           # Auto Dream background scheduler
+├── eval_harness.py    # recall evaluation (recall@k + MRR)
+├── sdk.py             # programmatic Python client
+└── server.py          # FastMCP bootstrap + lifespan
+tests/                 # pytest (129 tests); fakes.py has in-memory backend + hashing embedding
+```
 
 ## How to add a new vector backend
 
@@ -56,7 +68,7 @@ The interface contract:
 ```python
 class VectorBackend(ABC):
     async def add(self, record, embedding) -> None
-    async def get(self, memory_id) -> MemoryRecord | None
+    async def get(self,memory_id) -> MemoryRecord | None
     async def update(self, memory_id, *, text, tags, importance, metadata, embedding) -> MemoryRecord | None
     async def delete(self, memory_id) -> bool
     async def delete_by_scope(self, scope) -> int
@@ -70,8 +82,6 @@ A `touch(memory_id)` method is optional — the service layer uses it to bump
 `last_accessed_at` / `access_count` after a recall.
 
 ### Worked example: adding a Postgres (pgvector) backend
-
-Here's a concrete walk-through you can follow for any new backend.
 
 **1. Implement the backend** — `src/mnema/backends/pgvector.py`:
 
@@ -124,13 +134,14 @@ installed.
 **5. Update docs**: add a row to the backend table in `README.md` and
 `docs/backends.md`.
 
-**6. Verify**: `ruff check . && pytest -m 'not openai' && mnema --doctor --fix`.
+**6. Verify**: `ruff check . && pytest && mnema --doctor --fix`.
 
 ## How to add a new embedding provider
 
 1. Create `src/mnema/embeddings/yourprovider.py` implementing `EmbeddingProvider`.
 2. Register in `embeddings/__init__.py::make_embedding`.
-3. Add an optional-dependency entry + tests.
+3. Add a `[yourprovider]` extra in `pyproject.toml`.
+4. Add tests that mock httpx (see `tests/test_embeddings.py`).
 
 ### Worked example: adding a Cohere provider
 
@@ -161,13 +172,49 @@ Then:
 
 The whole change is typically <100 lines + tests.
 
+## How to add a CLI subcommand
+
+CLI subcommands live in `src/mnema/cli.py`. The pattern:
+
+1. Write an `async def cmd_yourcommand(args, svc: MemoryService) -> int` —
+   it calls `svc` methods and prints output. Return 0 on success.
+2. Register a subparser in `_build_parser()`:
+   ```python
+   sp = sub.add_parser("yourcommand", help="Do X")
+   sp.add_argument("--flag", ...)
+   sp.set_defaults(func=cmd_yourcommand)
+   ```
+3. Add the command name to `_CLI_COMMANDS` in `__main__.py` so the router
+   dispatches to the CLI (not the MCP server).
+4. Add `--json` output if it's a read command.
+5. Add tests in `tests/test_cli.py` (call the handler directly with fakes).
+
+See `cmd_backup` / `cmd_dream` / `cmd_eval` for reference.
+
+## How to add a REST API route
+
+Routes live in `src/mnema/api/app.py` — every route is a thin delegation to
+`MemoryService`. The pattern (contributed by @Nitjsefnie in the REST API PR):
+
+1. Add a request schema in `src/mnema/api/schemas.py` (Pydantic model
+   mirroring the service method's kwargs).
+2. Add a route in `create_app()`:
+   ```python
+   @app.post("/your-route", response_model=YourResponse, tags=["your-tag"])
+   async def your_route(body: YourRequest) -> YourResponse:
+       return await svc.your_method(**body.model_dump())
+   ```
+3. Add tests in `tests/test_api.py` using FastAPI's `TestClient` against the
+   in-memory fake service (no live server needed).
+
 ## Before you submit
 
+- [ ] `ruff check src/ tests/` is clean.
 - [ ] `pytest` passes (and you've installed the relevant `[extra]` if you touched a backend).
-- [ ] `ruff check .` is clean.
-- [ ] `mypy src/mnema` is clean (strict mode).
+- [ ] `mypy src/mnema` — run it, fix what's easy, but it won't block your PR.
 - [ ] New public functions have docstrings.
-- [ ] If you added a tool, update `SKILL.md` and the README tool table.
+- [ ] If you added an MCP tool, update `SKILL.md` and the README tool table.
+- [ ] If you added a CLI subcommand, add it to `_CLI_COMMANDS` in `__main__.py`.
 
 ## Commit messages
 
@@ -186,6 +233,7 @@ test(service): add scope-isolation coverage
 - Include tests for any new behavior.
 - Update docs (`README.md`, `SKILL.md`, `docs/`) when user-facing behavior changes.
 - Don't bump the version yourself; maintainers do that on release.
+- Open a **draft PR early** for large features — we're happy to review as you go.
 
 ## Reporting bugs
 
@@ -195,15 +243,18 @@ Open an issue with:
 2. Backend + embedding provider in use
 3. Minimal reproduction (config + commands)
 4. Expected vs actual behavior
-5. Logs (set `MNEMA_LOG_LEVEL=DEBUG` if helpful)
+5. Output of `mnema --doctor`
 
-## Feature ideas we'd love help with
+## Open issues we'd love help with
 
-- TypeScript server (`packages/mnema-ts/`)
-- CLI (`packages/mnema-cli/`)
-- More backends: Weaviate, pgvector, LanceDB
-- More embedding providers: Cohere, Voyage, Nomic, Ollama
-- A web dashboard for browsing memories
-- An evaluation harness with the evals in `docs/evaluations.xml`
+Check the [issue tracker](https://github.com/mienetic/mnema/issues) for the
+full list. Look for `good first issue` and `claimed` labels. Highlights:
+
+- **#3** — Web dashboard (frontend)
+- **#5** — LanceDB backend
+- **#7** — Cohere / Voyage / Nomic embedding providers
+- **#8** — TypeScript MCP server
+- **#19** — Slack / Discord bot
+- **#20** — Browser extension
 
 Thanks for helping make AI memory better! 💜
