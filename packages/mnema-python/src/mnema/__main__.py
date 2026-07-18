@@ -56,6 +56,7 @@ _CLI_COMMANDS = {
     "re-embed",
     "reembed",
     "serve",
+    "dashboard",
 }
 
 

@@ -1,0 +1,52 @@
+{% if error %}
+<p style="color:var(--red);">{{ error }}</p>
+{% elif plan %}
+<h2 style="font-size:1rem;margin-bottom:12px;color:var(--text-secondary);">
+  Plan for scope "{{ plan.scope }}" ({{ plan.total_memories }} memories)
+</h2>
+
+{% if plan.clusters %}
+  {% for cluster in plan.clusters %}
+  <div class="card">
+    <h3 style="font-size:0.95rem;margin-bottom:6px;">
+      Cluster {{ loop.index }} — {{ cluster.member_ids|length }} memories
+    </h3>
+    <p style="color:var(--text-primary);margin-bottom:4px;">{{ cluster.preview }}</p>
+    <div class="memory-meta">
+      <span>Representative: <code>{{ cluster.representative_id[:12] }}…</code></span>
+    </div>
+    <details style="margin-top:4px;">
+      <summary style="font-size:0.85rem;color:var(--text-muted);cursor:pointer;">{{ cluster.member_ids|length }} members</summary>
+      {% for mid in cluster.member_ids %}
+      <div style="font-size:0.8rem;color:var(--text-muted);padding:2px 0;">
+        <a href="/memories/{{ mid }}">{{ mid[:12] }}…</a>
+      </div>
+      {% endfor %}
+    </details>
+  </div>
+  {% endfor %}
+{% endif %}
+
+{% if plan.candidates_to_forget %}
+<div class="card" style="border-color:var(--red);">
+  <h3 style="font-size:0.95rem;margin-bottom:6px;color:var(--red);">
+    Candidates to forget ({{ plan.candidates_to_forget|length }})
+  </h3>
+  {% for cid in plan.candidates_to_forget[:10] %}
+  <div style="font-size:0.85rem;padding:2px 0;">
+    <a href="/memories/{{ cid }}">{{ cid[:12] }}…</a>
+  </div>
+  {% endfor %}
+  {% if plan.candidates_to_forget|length > 10 %}
+  <div style="font-size:0.8rem;color:var(--text-muted);">… and {{ plan.candidates_to_forget|length - 10 }} more</div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if not plan.clusters and not plan.candidates_to_forget %}
+<p style="color:var(--text-muted);">No clusters or candidates found for this scope.</p>
+{% endif %}
+
+{% else %}
+<p style="color:var(--text-muted);">Select a scope and press Plan Summarization.</p>
+{% endif %}

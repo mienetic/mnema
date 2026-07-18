@@ -503,6 +503,30 @@ def cmd_serve(args: argparse.Namespace, config: MnemaConfig) -> int:
     return 0
 
 
+def cmd_dashboard(args: argparse.Namespace, config: MnemaConfig) -> int:
+    """Run the Mnema Dashboard web UI (requires the 'api' extra).
+
+    Like :func:`cmd_serve`, this is synchronous — uvicorn owns the loop.
+    """
+    try:
+        import uvicorn
+
+        from mnema.dashboard import create_dashboard_app
+    except ImportError:
+        _print_err(
+            "The Dashboard requires the 'api' extra (fastapi + uvicorn + jinja2). "
+            "Install it with:\n    uv pip install 'mnema-mcp[api]'"
+        )
+        return 2
+
+    host = args.host or config.http_host
+    port = args.port or 8080
+    app = create_dashboard_app(config)
+    print(f"🧠 Mnema Dashboard on http://{host}:{port}  (Ctrl-C to stop)")
+    uvicorn.run(app, host=host, port=port, log_level="info")
+    return 0
+
+
 async def cmd_dream(args: argparse.Namespace, svc: MemoryService) -> int:
     """Run a single dream cycle (decay-forget + summarize-plan).
 
@@ -701,6 +725,21 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Bind port (default: MNEMA_HTTP_PORT or 8000)",
     )
     sp.set_defaults(func=cmd_serve)
+
+    # dashboard -----------------------------------------------------------
+    sp = sub.add_parser(
+        "dashboard",
+        help="Run the Mnema Dashboard web UI (requires the 'api' extra)",
+    )
+    sp.add_argument(
+        "--host", default=None,
+        help="Bind host (default: MNEMA_HTTP_HOST or 127.0.0.1)",
+    )
+    sp.add_argument(
+        "--port", type=int, default=None,
+        help="Bind port (default: 8080)",
+    )
+    sp.set_defaults(func=cmd_dashboard)
 
     # re-embed ------------------------------------------------------------
     sp = sub.add_parser(

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Mnema{% endblock %}
+{% block content %}
+<h1 class="page-title">Dashboard</h1>
+
+{% if stats %}
+<div class="card-grid">
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.total_memories }}</div>
+    <div class="stat-label">Memories</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.scopes|length }}</div>
+    <div class="stat-label">Scopes</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.backend }}</div>
+    <div class="stat-label">Backend</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.embedding_dim }}</div>
+    <div class="stat-label">Embedding dim</div>
+  </div>
+</div>
+
+<h2 style="font-size:1.1rem; margin-bottom:12px; color:var(--text-secondary);">Scopes</h2>
+<div class="card" style="padding:12px 16px;">
+  {% if scopes %}
+    {% for scope_name, count in scopes %}
+    <div class="bar-row">
+      <div class="bar-label">{{ scope_name }}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: {{ (count / max_count * 100)|round|int }}%;"></div>
+      </div>
+      <div class="bar-count">{{ count }}</div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p style="color:var(--text-muted);">No scopes yet.</p>
+  {% endif %}
+</div>
+
+<div class="action-bar">
+  <a href="/memories" class="btn btn-primary">Browse Memories</a>
+  <a href="/search" class="btn">Search</a>
+  <a href="/decay" class="btn">Run Decay</a>
+</div>
+
+{% else %}
+<p style="color:var(--text-muted);">Could not load stats. Is the backend running?</p>
+{% endif %}
+{% endblock %}

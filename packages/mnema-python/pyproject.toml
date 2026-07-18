@@ -58,7 +58,7 @@ openai = ["openai>=1.40"]
 # exists for discoverability and to keep the install matrix explicit).
 ollama = []
 # REST API server (FastAPI + uvicorn) exposed via `mnema serve`.
-api = ["fastapi>=0.110", "uvicorn>=0.29"]
+api = ["fastapi>=0.110", "uvicorn>=0.29", "jinja2>=3.0"]
 # Everything most users will want (Chroma backend + local embeddings).
 default = [
     "chromadb>=0.5",

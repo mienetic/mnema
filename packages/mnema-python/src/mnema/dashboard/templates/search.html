@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Search — Mnema{% endblock %}
+{% block content %}
+<h1 class="page-title">Search Memories</h1>
+
+<div class="card search-form">
+  <form hx-get="/search/results" hx-target="#search-results" hx-indicator="#spinner">
+    <div class="form-row">
+      <div class="form-group" style="flex:1;min-width:200px;">
+        <label>Query</label>
+        <input class="form-control" type="text" name="query" value="{{ query }}" placeholder="What are you looking for?" required>
+      </div>
+      <div class="form-group">
+        <label>Scope</label>
+        <select class="form-control" name="scope">
+          <option value="">All scopes</option>
+          {% for s in all_scopes %}
+          <option value="{{ s }}" {% if scope_filter == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tags</label>
+        <input class="form-control" type="text" name="tags" value="{{ tags_filter }}" placeholder="tag1, tag2">
+      </div>
+      <div class="form-group" style="align-self:flex-end;">
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div id="search-results">
+  {% if results is not none %}
+    {% include "_search_results.html" %}
+  {% else %}
+    <p style="color:var(--text-muted);">Enter a query and press Search to find memories.</p>
+  {% endif %}
+</div>
+
+<div id="spinner" class="htmx-indicator" style="text-align:center;padding:20px;display:none;color:var(--text-muted);">
+  Searching…
+</div>
+{% endblock %}

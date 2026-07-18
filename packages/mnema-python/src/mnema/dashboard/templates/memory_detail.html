@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Memory — Mnema{% endblock %}
+{% block content %}
+<div style="margin-bottom:12px;">
+  <a href="/memories" style="font-size:0.9rem;">← Back to Memories</a>
+</div>
+
+<h1 class="page-title" style="font-size:1.2rem; word-break:break-all;">
+  Memory · {{ record.id[:12] }}…
+</h1>
+
+<div class="card">
+  <div class="memory-text" style="font-size:1.1rem; margin-bottom:16px; white-space:pre-wrap;">{{ record.text }}</div>
+</div>
+
+<div class="card" style="padding:0;">
+  <table class="prop-table">
+    <tr><td>ID</td><td style="font-family:monospace;font-size:0.85rem;">{{ record.id }}</td></tr>
+    <tr><td>Scope</td><td><span class="tag">{{ record.scope }}</span></td></tr>
+    <tr><td>Importance</td>
+      <td>
+        <span class="importance-chip importance-{{ _importance_label(record.importance) }}">
+          {{ int(record.importance) }} {{ _importance_label(record.importance) }}
+        </span>
+      </td>
+    </tr>
+    <tr><td>Tags</td>
+      <td>
+        {% if record.tags %}
+          {% for t in record.tags %}
+          <span class="tag">{{ t }}</span>
+          {% endfor %}
+        {% else %}
+          <span style="color:var(--text-muted);">—</span>
+        {% endif %}
+      </td>
+    </tr>
+    <tr><td>Created</td><td>{{ _fmt_time(record.created_at) }} ({{ _time_ago(record.created_at) }})</td></tr>
+    <tr><td>Last Accessed</td><td>{{ _fmt_time(record.last_accessed_at) }} ({{ _time_ago(record.last_accessed_at) }})</td></tr>
+    <tr><td>Access Count</td><td>{{ record.access_count }}</td></tr>
+    <tr><td>Embedding Dim</td><td>{{ record.embedding_dim }}</td></tr>
+    {% if record.score is not none %}
+    <tr>
+      <td>Decay Score</td>
+      <td>
+        <span style="color:{{ _decay_color(record.score) }};font-weight:600;">{{ "%.3f"|format(record.score) }}</span>
+      </td>
+    </tr>
+    {% endif %}
+    {% if record.metadata %}
+    <tr><td>Metadata</td><td><pre class="metadata-pre">{{ json.dumps(record.metadata, indent=2) }}</pre></td></tr>
+    {% endif %}
+  </table>
+</div>
+
+<div class="action-bar">
+  <a href="/memories/{{ record.id }}/edit" class="btn btn-primary">Edit</a>
+  <form method="post" action="/memories/{{ record.id }}/forget" style="display:inline;" onsubmit="return confirm('Permanently forget this memory?');">
+    <button type="submit" class="btn btn-danger">Forget</button>
+  </form>
+  <a href="/memories" class="btn">Back to List</a>
+</div>
+{% endblock %}

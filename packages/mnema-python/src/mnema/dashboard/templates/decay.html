@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Decay — Mnema{% endblock %}
+{% block content %}
+<h1 class="page-title">Apply Decay</h1>
+
+<p style="color:var(--text-secondary);margin-bottom:16px;">
+  Find memories whose decay score is below a threshold — these are candidates
+  for forgetting. Preview (dry run) first, then apply to actually delete.
+</p>
+
+<div class="card">
+  <form hx-post="/decay" hx-target="#decay-results" hx-indicator="#spinner">
+    <div class="form-row" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+      <div class="form-group">
+        <label>Scope</label>
+        <select class="form-control" name="scope">
+          <option value="">All scopes</option>
+          {% for s in all_scopes %}
+          <option value="{{ s }}" {% if scope_filter == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:200px;">
+        <label>Threshold: <span id="threshold-val">{{ threshold }}</span></label>
+        <input class="form-control" type="range" name="threshold" min="0" max="1" step="0.01" value="{{ threshold }}"
+          oninput="document.getElementById('threshold-val').textContent=this.value">
+      </div>
+      <div class="form-group" style="align-self:flex-end;">
+        <button type="submit" class="btn btn-primary" name="apply" value="false">🔍 Preview (dry run)</button>
+        <button type="submit" class="btn btn-danger" name="apply" value="true"
+          onclick="return confirm('Permanently forget all decay candidates?');">🗑 Apply Decay</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div id="decay-results">
+  {% if candidates is not none %}
+    {% include "_decay_results.html" %}
+  {% else %}
+    <p style="color:var(--text-muted);">Select a threshold and run Preview to see candidates.</p>
+  {% endif %}
+</div>
+
+<div id="spinner" class="htmx-indicator" style="text-align:center;padding:20px;display:none;color:var(--text-muted);">
+  Processing…
+</div>
+{% endblock %}

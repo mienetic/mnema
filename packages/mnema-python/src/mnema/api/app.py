@@ -70,6 +70,7 @@ def create_app(
         version=__version__,
         lifespan=lifespan,
     )
+    app.state._svc = svc
 
     # --- exception mapping ------------------------------------------------
     @app.exception_handler(MemoryNotFoundError)
