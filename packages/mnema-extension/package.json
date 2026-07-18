@@ -1,0 +1,17 @@
+{
+  "name": "mnema-extension",
+  "version": "0.1.0",
+  "description": "Browser extension (Manifest V3) that captures selected text from any web page into Mnema via its REST API.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/mienetic/mnema/tree/main/packages/mnema-extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mienetic/mnema.git",
+    "directory": "packages/mnema-extension"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\""
+  }
+}

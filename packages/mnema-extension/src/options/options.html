@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mnema — Settings</title>
+    <link rel="stylesheet" href="../popup/popup.css" />
+    <style>
+      body { width: auto; max-width: 540px; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🧠 Mnema settings</h1>
+    </header>
+
+    <form id="options-form">
+      <label for="server-url">Mnema server URL</label>
+      <input id="server-url" name="server-url" type="text" placeholder="http://127.0.0.1:8000" />
+      <p class="hint">
+        Where <code>mnema serve</code> is listening. Default is
+        <code>http://127.0.0.1:8000</code>; a remote host or a reverse-proxy
+        path (<code>https://mnema.example.com/api</code>) works too. Saving a
+        non-local URL asks for permission to talk to that host.
+      </p>
+
+      <label for="default-scope">Default scope</label>
+      <input id="default-scope" name="default-scope" type="text" placeholder="blank = the server's default_scope" />
+      <p class="hint">Pre-fills the capture form. Leave blank to let the server decide.</p>
+
+      <label for="default-tags">Default tags</label>
+      <input id="default-tags" name="default-tags" type="text" placeholder="web, clipped" />
+      <p class="hint">Comma separated, at most 20 tags.</p>
+
+      <label for="default-importance">Default importance: <output id="default-importance-value">5</output></label>
+      <input id="default-importance" name="default-importance" type="range" min="1" max="10" step="1" value="5" />
+
+      <div class="actions">
+        <button id="save" type="submit">Save settings</button>
+        <button id="test" type="button" class="secondary">Test connection</button>
+      </div>
+    </form>
+
+    <p id="status" role="status" aria-live="polite" hidden></p>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

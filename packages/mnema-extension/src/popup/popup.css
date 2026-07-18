@@ -1,0 +1,147 @@
+/* Popup styling. Deliberately dependency-free and system-font based — the
+   extension ships no build step, so there is nothing to compile here. */
+
+:root {
+  --fg: #1c1b22;
+  --muted: #6b6a75;
+  --accent: #6d4aff;
+  --ok: #0f7b3f;
+  --err: #b3261e;
+  --border: #dcdae4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 14px 16px 18px;
+  width: 420px;
+  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--fg);
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 15px;
+}
+
+header a {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+label {
+  display: block;
+  margin: 10px 0 4px;
+  font-weight: 600;
+}
+
+label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-weight: 400;
+}
+
+textarea,
+input[type="text"] {
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  resize: vertical;
+}
+
+textarea:focus,
+input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.hint {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hint .over {
+  color: var(--err);
+  font-weight: 700;
+}
+
+.server-line {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  word-break: break-all;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+button {
+  flex: 1;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.secondary {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-weight: 400;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+#status {
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+#status.success {
+  background: #e6f4ec;
+  color: var(--ok);
+}
+
+#status.error {
+  background: #fdecea;
+  color: var(--err);
+}
+
+#status.info {
+  background: #f0eeff;
+  color: var(--muted);
+}
