@@ -13,6 +13,10 @@ downloads/
 eggs/
 .eggs/
 lib/
+# The Python `lib/` rule above matches any dir named lib, incl. the extension's
+# JS source `packages/mnema-extension/src/lib/` — re-include it (it is not a venv).
+!packages/mnema-extension/src/lib/
+!packages/mnema-extension/src/lib/*.js
 lib64/
 parts/
 sdist/
