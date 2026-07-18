@@ -41,6 +41,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   (`MnemaError` subclasses) print cleanly without the noise. Set
   `MNEMA_LOG_LEVEL=DEBUG` for verbose logs (backend queries, embed latency,
   search scores).
+- **🧩 Browser extension** — Manifest V3 extension (Chrome/Edge/Firefox 115+)
+  that captures selected text from any page: **select text → right-click
+  "Remember this" → adjust scope/tags/importance → Save.** Vanilla ES modules,
+  no build step, 51 unit tests. Contributed by
+  [@Nitjsefnie](https://github.com/Nitjsefnie). ([#20](https://github.com/mienetic/mnema/issues/20), [#23](https://github.com/mienetic/mnema/pull/23))
 - **Ollama embedding provider** — talk to a local Ollama server
   (`nomic-embed-text`, 768-d) so embeddings run fully local without loading a
   model in-process. Contributed by [@faizmullaa](https://github.com/faizmullaa). ([#6](https://github.com/mienetic/mnema/issues/6), [#17](https://github.com/mienetic/mnema/pull/17))
