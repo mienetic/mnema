@@ -1,10 +1,18 @@
 name: Node CI
 
+# Runs the browser extension's unit tests (node:test via npm test) on every
+# push/PR that touches packages/mnema-extension/. Keeps the extension's pure
+# logic layer (api.js, storage.js) green across Node versions.
+
 on:
   push:
     branches: [main]
+    paths:
+      - "packages/mnema-extension/**"
   pull_request:
     branches: [main]
+    paths:
+      - "packages/mnema-extension/**"
 
 jobs:
   test:
