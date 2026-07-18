@@ -6,6 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Planned
+- TypeScript MCP server (`packages/mnema-ts/`)
+- Web dashboard for browsing memories
+- Slack / Discord bot
+
+## [0.3.0] — 2026-07-18
+
 ### Added
 - **`mnema` CLI** — full terminal interface that reuses `MemoryService`, so it
   behaves identically to an MCP-connected client. Subcommands: `add`,
@@ -87,11 +94,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
   All three were found during end-to-end testing after v0.2.0.
 
-### Planned
-- TypeScript MCP server (`packages/mnema-ts/`)
-- Web dashboard for browsing memories
-- Evaluation harness (`docs/evaluations.xml`)
-
 ## [0.1.0] — 2026-07-13
 
 ### Added
@@ -119,5 +121,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Test suite with in-memory fakes + a backend matrix that runs against
   every supported store.
 
-[Unreleased]: https://github.com/mienetic/mnema/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/mienetic/mnema/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/mienetic/mnema/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/mienetic/mnema/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mienetic/mnema/releases/tag/v0.1.0
