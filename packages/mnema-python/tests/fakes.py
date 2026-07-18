@@ -221,7 +221,7 @@ def chroma_available() -> bool:
         import chromadb  # noqa: F401
 
         return True
-    except ImportError:
+    except Exception:
         return False
 
 
@@ -230,7 +230,7 @@ def qdrant_available() -> bool:
         import qdrant_client  # noqa: F401
 
         return True
-    except ImportError:
+    except Exception:
         return False
 
 
@@ -239,7 +239,16 @@ def sqlite_vec_available() -> bool:
         import sqlite_vec  # noqa: F401
 
         return True
-    except ImportError:
+    except Exception:
+        return False
+
+
+def pgvector_available() -> bool:
+    try:
+        import asyncpg  # noqa: F401
+
+        return True
+    except Exception:
         return False
 
 
@@ -248,7 +257,7 @@ def st_available() -> bool:
         import sentence_transformers  # noqa: F401
 
         return True
-    except ImportError:
+    except Exception:
         return False
 
 
@@ -256,6 +265,9 @@ skip_no_chroma = pytest.mark.skipif(not chroma_available(), reason="chromadb not
 skip_no_qdrant = pytest.mark.skipif(not qdrant_available(), reason="qdrant-client not installed")
 skip_no_sqlite_vec = pytest.mark.skipif(
     not sqlite_vec_available(), reason="sqlite-vec not installed"
+)
+skip_no_pgvector = pytest.mark.skipif(
+    not pgvector_available(), reason="asyncpg not installed"
 )
 skip_no_st = pytest.mark.skipif(
     not st_available(), reason="sentence-transformers not installed"

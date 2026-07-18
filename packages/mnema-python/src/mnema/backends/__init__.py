@@ -43,6 +43,13 @@ def make_backend(config: MnemaConfig) -> VectorBackend:
             raise BackendNotAvailableError("sqlite_vec", "sqlite_vec") from exc
         return SqliteVecBackend(config)
 
+    if backend == "pgvector":
+        try:
+            from mnema.backends.pgvector import PgVectorBackend
+        except ImportError as exc:  # pragma: no cover
+            raise BackendNotAvailableError("pgvector", "pgvector") from exc
+        return PgVectorBackend(config)
+
     raise ConfigError(f"Unknown backend: {backend!r}")
 
 

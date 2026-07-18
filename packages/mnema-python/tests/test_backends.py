@@ -7,6 +7,8 @@ backends in ``[all]`` installs.
 
 from __future__ import annotations
 
+import os
+
 import pytest
 
 from mnema.config import MnemaConfig
@@ -14,6 +16,7 @@ from mnema.service import MemoryService
 from tests.fakes import (
     HashingEmbedding,
     skip_no_chroma,
+    skip_no_pgvector,
     skip_no_qdrant,
     skip_no_sqlite_vec,
 )
@@ -95,6 +98,31 @@ class TestSqliteVecBackend:
         )
         emb = HashingEmbedding(dim=64)
         backend = SqliteVecBackend(cfg)
+        svc = MemoryService(cfg, backend=backend, embedding=emb)
+        try:
+            await _roundtrip(svc)
+        finally:
+            await svc.aclose()
+
+
+@skip_no_pgvector
+class TestPgVectorBackend:
+    async def test_roundtrip(self):
+        dsn = os.environ.get("MNEMA_PGVECTOR_TEST_DSN")
+        if not dsn:
+            pytest.skip("MNEMA_PGVECTOR_TEST_DSN environment variable not set")
+        from mnema.backends.pgvector import PgVectorBackend
+
+        cfg = MnemaConfig(
+            backend="pgvector",
+            backend_path=dsn,
+            backend_collection="memories_test",
+            embedding="local",
+            embedding_model="all-MiniLM-L6-v2",
+            embedding_dim=64,
+        )
+        emb = HashingEmbedding(dim=64)
+        backend = PgVectorBackend(cfg)
         svc = MemoryService(cfg, backend=backend, embedding=emb)
         try:
             await _roundtrip(svc)

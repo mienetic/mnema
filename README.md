@@ -406,6 +406,7 @@ All settings are environment-driven (or `.env`):
 | **Chroma** (default) | `chroma` | ✅ in-process + persistent | Quick start, single-user, dev |
 | **Qdrant** | `qdrant` | ✅ local path / `:memory:` / remote | Production, high scale, metadata filtering |
 | **sqlite-vec** | `sqlite_vec` | ✅ pure SQLite | Smallest footprint, constrained envs |
+| **pgvector** | `pgvector` | ❌ requires Postgres server | Production, existing Postgres infra |
 
 Switch backends by reinstalling with the right extra and setting the env var:
 

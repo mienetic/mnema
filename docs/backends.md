@@ -9,6 +9,7 @@ interface.
 | **Chroma** | ✅ in-process | `chromadb` | 384 | local dir | default, dev, single-user |
 | **Qdrant** | ✅ local path / `:memory:` / remote | `qdrant-client` | 384 | local or remote | production, high scale |
 | **sqlite-vec** | ✅ pure SQLite | `sqlite-vec` | 384 | SQLite file | smallest footprint |
+| **pgvector** | ❌ requires Postgres server | `asyncpg` | 384 | remote Postgres | production, existing Postgres infra |
 
 ## Selecting a backend
 
@@ -35,6 +36,7 @@ mnema --doctor
 | `chroma` | ChromaDB (embedded, default backend) |
 | `qdrant` | Qdrant client (local or remote) |
 | `sqlite_vec` | sqlite-vec loadable extension |
+| `pgvector` | asyncpg (Postgres + pgvector extension) |
 | `local` | sentence-transformers (offline embeddings) |
 | `openai` | OpenAI embeddings |
 | `all` | everything above |
