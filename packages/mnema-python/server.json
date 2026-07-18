@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mienetic/mnema",
+  "title": "Mnema",
+  "description": "Long-term memory for AI agents via MCP, with pluggable vector backends and hybrid search.",
+  "version": "0.3.0",
+  "repository": {
+    "url": "https://github.com/mienetic/mnema",
+    "source": "github",
+    "id": "1298974115",
+    "subfolder": "packages/mnema-python"
+  },
+  "websiteUrl": "https://github.com/mienetic/mnema#readme"
+}

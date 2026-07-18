@@ -30,3 +30,12 @@ asyncio.run(main())
 ```
 
 License: MIT.
+
+<!--
+mcp-name: io.github.mienetic/mnema
+This marker is the MCP Registry's PyPI ownership-verification token (see
+https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx#pypi-packages).
+It has no effect until this package is published to PyPI under the identifier
+`mnema-mcp` — see ../../README.md#-mcp-registry for the full submission plan.
+-->
+
