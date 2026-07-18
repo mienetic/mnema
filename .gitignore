@@ -55,6 +55,9 @@ coverage.xml
 *.cover
 .cache
 
+# Test data directories (created by backend tests)
+test-*-data/
+
 # Type checking
 .mypy_cache/
 .ruff_cache/

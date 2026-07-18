@@ -14,7 +14,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from mnema.errors import ConfigError
 
-BackendName = Literal["chroma", "qdrant", "sqlite_vec"]
+BackendName = Literal["chroma", "qdrant", "sqlite_vec", "lancedb"]
 EmbeddingName = Literal["local", "openai", "ollama"]
 TransportName = Literal["stdio", "http"]
 
@@ -40,7 +40,7 @@ class MnemaConfig(BaseSettings):
     # --- Backend -----------------------------------------------------------
     backend: BackendName = Field(
         default="chroma",
-        description="Vector backend: 'chroma' (default, embedded), 'qdrant', 'sqlite_vec'",
+        description="Vector backend: 'chroma' (default, embedded), 'qdrant', 'sqlite_vec', 'lancedb'",
     )
     backend_path: str = Field(
         default=".mnema/data",

@@ -1,6 +1,6 @@
 # Vector backends
 
-Mnema ships three pluggable backends. Pick one based on your scale and
+Mnema ships four pluggable backends. Pick one based on your scale and
 operational preferences — they all implement the same `VectorBackend`
 interface.
 
@@ -10,7 +10,7 @@ interface.
 | **Qdrant** | ✅ local path / `:memory:` / remote | `qdrant-client` | 384 | local or remote | production, high scale |
 | **sqlite-vec** | ✅ pure SQLite | `sqlite-vec` | 384 | SQLite file | smallest footprint |
 | **pgvector** 🚧 | ✅ Postgres extension | `asyncpg` + `pgvector` | 384 | Postgres | teams with existing Postgres *(in progress — #4)* |
-| **LanceDB** 🚧 | ✅ embedded columnar | `lancedb` | 384 | local files | high-performance local *(in progress — #5)* |
+| **LanceDB** | ✅ embedded columnar | `lancedb` | 384 | local files | high-performance local |
 
 ## Selecting a backend
 
@@ -37,6 +37,7 @@ mnema --doctor
 | `chroma` | ChromaDB (embedded, default backend) |
 | `qdrant` | Qdrant client (local or remote) |
 | `sqlite_vec` | sqlite-vec loadable extension |
+| `lancedb` | LanceDB embedded columnar vector DB |
 | `local` | sentence-transformers (offline embeddings) |
 | `openai` | OpenAI embeddings |
 | `all` | everything above |
@@ -92,7 +93,25 @@ MNEMA_BACKEND_PATH=~/.mnema-data/mnema.db
 - Stores vectors in a `vec0` virtual table; metadata in a normal table.
 - Great for constrained environments (lambdas, edge, single-binary distros).
 
+## LanceDB
+
+**Embedded columnar vector DB built on the Lance format. High-performance local storage.**
+
+Install with: `MNEMA_EXTRAS=lancedb bash scripts/install.sh`
+
+```
+MNEMA_BACKEND=lancedb
+MNEMA_BACKEND_PATH=~/.mnema-data
+```
+
+- Runs in-process via `lancedb.connect()`. No server to start.
+- Persists to `MNEMA_BACKEND_PATH` as Lance columnar files.
+- Columnar format enables fast filter pushdown and efficient scans.
+- Good for larger local stores where Chroma's SQLite-backed performance may degrade.
+
 ---
+
+
 
 ## Adding your own backend
 
