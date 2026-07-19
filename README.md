@@ -497,6 +497,59 @@ See [`docker/`](docker/) for the Dockerfile and compose setup.
 
 ---
 
+## 📋 MCP Registry
+
+Mnema is not yet listed on the [official MCP Registry](https://registry.modelcontextprotocol.io/)
+([modelcontextprotocol/registry](https://github.com/modelcontextprotocol/registry)). Listing
+there is a **maintainer-only action** — the registry namespace
+(`io.github.mienetic/mnema`) is proven via GitHub OAuth for the `mienetic` account,
+so only the repo owner can complete the submission. This section tracks what's
+ready and what's left.
+
+> **Process note:** [issue #21](https://github.com/mienetic/mnema/issues/21) pointed
+> at `modelcontextprotocol/servers`' "Adding your server" flow (a PR adding a row to
+> a categorized README list). That process has since been retired — that repo's
+> README now states it "is dedicated to housing just the small number of reference
+> servers maintained by the MCP steering group" and points elsewhere for the actual
+> server directory. The current mechanism is the separate
+> [`modelcontextprotocol/registry`](https://github.com/modelcontextprotocol/registry)
+> project: a live, searchable API (`registry.modelcontextprotocol.io`) that servers
+> publish to directly via the `mcp-publisher` CLI, using a `server.json` manifest
+> validated against a published [JSON Schema](https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json).
+> There is no PR to open and no `category` field anymore (that schema has no
+> category/tag taxonomy at all — discovery is via the API's search).
+
+**Prepared:** [`packages/mnema-python/server.json`](packages/mnema-python/server.json) —
+a schema-valid manifest with the server's name, description, version, and
+repository metadata (including the `packages/mnema-python` monorepo subfolder).
+
+**Not yet possible:** the manifest has no `packages` entry. The registry only
+resolves ownership for packages published to a **supported** package registry —
+currently npm, PyPI, NuGet, Cargo/crates.io, Docker/OCI, or MCPB releases (see
+[Package Types](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx)).
+Mnema isn't on any of them yet — as [`.github/workflows/release.yml`](.github/workflows/release.yml)
+says today: *"Mnema is NOT published to PyPI — installation is via the one-line
+installer (git + uv)."* That installer has no representation in the current
+`server.json` schema, so a submission today would be a bare, install-less
+listing (discovery only, no auto-install for MCP clients).
+
+**To complete the listing** (maintainer, once ready to publish to PyPI):
+
+1. Publish the [`mnema-mcp`](packages/mnema-python/pyproject.toml) package to
+   PyPI (already named/versioned there; needs a PyPI account + `uv build` +
+   `twine upload`, or equivalent). The
+   `<!-- mcp-name: io.github.mienetic/mnema -->` ownership marker is already
+   in [`packages/mnema-python/README.md`](packages/mnema-python/README.md),
+   ready for the registry's PyPI verification step.
+2. Add a `packages` entry to `server.json`:
+   `{"registryType": "pypi", "identifier": "mnema-mcp", "version": "<published version>", "transport": {"type": "stdio"}}`.
+3. Install [`mcp-publisher`](https://github.com/modelcontextprotocol/registry/releases),
+   run `mcp-publisher login github`, then `mcp-publisher publish` from
+   `packages/mnema-python/`.
+4. Verify: `curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.mienetic/mnema"`.
+
+---
+
 ## 📦 Project layout
 
 ```
