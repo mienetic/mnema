@@ -1,0 +1,26 @@
+{% if applied %}
+<p style="color:var(--green);font-weight:600;margin-bottom:12px;">
+  ✓ Applied decay — {{ candidates|length }} memories forgotten (threshold={{ threshold }})
+</p>
+{% elif candidates %}
+<p style="color:var(--yellow);font-weight:600;margin-bottom:12px;">
+  Dry run — {{ candidates|length }} candidate{% if candidates|length != 1 %}s{% endif %} below {{ threshold }}
+</p>
+<div class="card" style="padding:0;">
+  {% for c in candidates %}
+  <div class="memory-row">
+    <div class="memory-body">
+      <div class="memory-text">{{ _truncate(c.text, 80) }}</div>
+      <div class="memory-meta">
+        <span>score={{ "%.3f"|format(c.score) }}</span>
+        <span class="tag">{{ c.scope }}</span>
+        <span>importance={{ int(c.importance) }}</span>
+        <a href="/memories/{{ c.id }}" class="btn btn-sm">View</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p style="color:var(--green);">No candidates below threshold {{ threshold }}.</p>
+{% endif %}

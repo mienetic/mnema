@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Mnema Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      🧠 mnema <small>v{{ nav.version }}</small>
+    </div>
+    <div class="sidebar-nav">
+      <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">⌂ Home</a>
+      <a href="/memories" class="{% if request.url.path.startswith('/memories') %}active{% endif %}">☰ Memories</a>
+      <a href="/search" class="{% if request.url.path.startswith('/search') %}active{% endif %}">🔍 Search</a>
+      <a href="/decay" class="{% if request.url.path == '/decay' %}active{% endif %}">↓ Decay</a>
+      <a href="/summarize" class="{% if request.url.path == '/summarize' %}active{% endif %}">⊞ Summarize</a>
+    </div>
+    {% if nav.stats %}
+    <div class="sidebar-footer">
+      <div class="stat-line"><span>Memories</span><span>{{ nav.stats.total_memories }}</span></div>
+      <div class="stat-line"><span>Scopes</span><span>{{ nav.stats.scopes|length }}</span></div>
+      <div class="stat-line"><span>Backend</span><span>{{ nav.stats.backend }}</span></div>
+    </div>
+    {% endif %}
+  </nav>
+  <main class="main">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

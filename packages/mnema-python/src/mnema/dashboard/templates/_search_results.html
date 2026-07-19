@@ -1,0 +1,59 @@
+{% if results and results.results %}
+<p style="color:var(--text-secondary);margin-bottom:12px;">
+  {{ results.count }} result{% if results.count != 1 %}s{% endif %}
+  {% if elapsed %}({{ "%.2f"|format(elapsed) }}s){% endif %}
+</p>
+
+<div class="card" style="padding:0;">
+  {% for hit in results.results %}
+  <div class="memory-row">
+    <div class="memory-bullet">#{{ loop.index }}</div>
+    <div class="memory-body">
+      <div class="memory-text">{{ hit.memory.text }}</div>
+      <div class="score-bar">
+        <span class="score-label">score</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:{{ (hit.score * 100)|round|int }}%;background:var(--blue);"></div>
+        </div>
+        <span class="score-val">{{ "%.3f"|format(hit.score) }}</span>
+      </div>
+      <div class="score-bar">
+        <span class="score-label">vector</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:{{ (hit.vector_score * 100)|round|int }}%;background:var(--green);"></div>
+        </div>
+        <span class="score-val">{{ "%.3f"|format(hit.vector_score) }}</span>
+      </div>
+      <div class="score-bar">
+        <span class="score-label">keyword</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:{{ (hit.keyword_score * 100)|round|int }}%;background:var(--yellow);"></div>
+        </div>
+        <span class="score-val">{{ "%.3f"|format(hit.keyword_score) }}</span>
+      </div>
+      <div class="score-bar">
+        <span class="score-label">decay</span>
+        <div class="score-track">
+          <div class="score-fill" style="width:{{ (hit.decay_score * 100)|round|int }}%;background:var(--text-muted);"></div>
+        </div>
+        <span class="score-val">{{ "%.3f"|format(hit.decay_score) }}</span>
+      </div>
+      <div class="memory-meta" style="margin-top:4px;">
+        <span class="tag">{{ hit.memory.scope }}</span>
+        <span class="importance-chip importance-{{ _importance_label(hit.memory.importance) }}">
+          {{ int(hit.memory.importance) }}
+        </span>
+        {% if hit.memory.tags %}
+          {% for t in hit.memory.tags[:3] %}
+          <span class="tag">{{ t }}</span>
+          {% endfor %}
+        {% endif %}
+        <a href="/memories/{{ hit.memory.id }}" class="btn btn-sm">View</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p style="color:var(--text-muted);">No matches for "{{ query }}".</p>
+{% endif %}

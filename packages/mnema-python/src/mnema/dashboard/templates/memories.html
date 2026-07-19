@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Memories — Mnema{% endblock %}
+{% block content %}
+<h1 class="page-title">Memories <small style="font-size:0.7rem;color:var(--text-muted);font-weight:400;">{{ total }} total</small></h1>
+
+<div class="filters">
+  <div class="form-group">
+    <label>Scope</label>
+    <select class="form-control" style="width:auto;" onchange="window.location.href='?scope='+encodeURIComponent(this.value)+'&sort={{ sort }}&page=1'">
+      <option value="">All scopes</option>
+      {% for s in all_scopes %}
+      <option value="{{ s }}" {% if scope_filter == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Sort</label>
+    <select class="form-control" style="width:auto;" onchange="window.location.href='?scope={{ scope_filter }}&sort='+this.value+'&page=1'">
+      <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Newest first</option>
+      <option value="importance" {% if sort == 'importance' %}selected{% endif %}>Importance</option>
+    </select>
+  </div>
+</div>
+
+{% if records %}
+<div class="card" style="padding:0;">
+  {% for record in records %}
+  <div class="memory-row">
+    <div class="memory-bullet">○</div>
+    <div class="memory-body">
+      <div class="memory-text">{{ record.text }}</div>
+      <div class="memory-meta">
+        <span>{{ record.id[:8] }}…</span>
+        <span>{{ _time_ago(record.created_at) }}</span>
+        {% if record.scope %}<span class="tag">{{ record.scope }}</span>{% endif %}
+        <span class="importance-chip importance-{{ _importance_label(record.importance) }}">
+          {{ int(record.importance) }} {{ _importance_label(record.importance) }}
+        </span>
+        {% if record.tags %}
+          {% for t in record.tags[:3] %}
+          <span class="tag">{{ t }}</span>
+          {% endfor %}
+          {% if record.tags|length > 3 %}
+          <span class="tag">+{{ record.tags|length - 3 }}</span>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="memory-actions">
+      <a href="/memories/{{ record.id }}" class="btn btn-sm">View</a>
+      <a href="/memories/{{ record.id }}/edit" class="btn btn-sm">Edit</a>
+      <form method="post" action="/memories/{{ record.id }}/forget?scope={{ scope_filter }}&page={{ current_page }}" style="display:inline;" onsubmit="return confirm('Forget this memory?');">
+        <button type="submit" class="btn btn-sm btn-danger">Forget</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="pagination">
+  {% if current_page > 1 %}
+  <a href="?scope={{ scope_filter }}&sort={{ sort }}&page=1">«</a>
+  <a href="?scope={{ scope_filter }}&sort={{ sort }}&page={{ current_page - 1 }}">‹</a>
+  {% else %}
+  <span class="disabled">«</span>
+  <span class="disabled">‹</span>
+  {% endif %}
+
+  {% for p in range(1, total_pages + 1) %}
+    {% if p == current_page %}
+    <span class="active">{{ p }}</span>
+    {% elif p <= 3 or p > total_pages - 2 or (p >= current_page - 1 and p <= current_page + 1) %}
+    <a href="?scope={{ scope_filter }}&sort={{ sort }}&page={{ p }}">{{ p }}</a>
+    {% elif p == current_page - 2 or p == current_page + 2 %}
+    <span style="color:var(--text-muted);">…</span>
+    {% endif %}
+  {% endfor %}
+
+  {% if current_page < total_pages %}
+  <a href="?scope={{ scope_filter }}&sort={{ sort }}&page={{ current_page + 1 }}">›</a>
+  <a href="?scope={{ scope_filter }}&sort={{ sort }}&page={{ total_pages }}">»</a>
+  {% else %}
+  <span class="disabled">›</span>
+  <span class="disabled">»</span>
+  {% endif %}
+</div>
+
+{% else %}
+<p style="color:var(--text-muted);">No memories found.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Summarize — Mnema{% endblock %}
+{% block content %}
+<h1 class="page-title">Summarize Scope</h1>
+
+<p style="color:var(--text-secondary);margin-bottom:16px;">
+  Cluster memories by tag similarity and generate a summarization plan.
+  Mnema plans the work — an LLM client would execute the actual summarization.
+</p>
+
+<div class="card">
+  <form hx-post="/summarize" hx-target="#summarize-results" hx-indicator="#spinner">
+    <div class="form-row" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+      <div class="form-group">
+        <label>Scope</label>
+        <select class="form-control" name="scope" required>
+          <option value="">Select scope…</option>
+          {% for s in all_scopes %}
+          <option value="{{ s }}" {% if scope_filter == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:200px;">
+        <label>Similarity threshold: <span id="sim-val">{{ similarity_threshold }}</span></label>
+        <input class="form-control" type="range" name="similarity_threshold" min="0" max="1" step="0.01" value="{{ similarity_threshold }}"
+          oninput="document.getElementById('sim-val').textContent=this.value">
+      </div>
+      <div class="form-group" style="align-self:flex-end;">
+        <button type="submit" class="btn btn-primary">Plan Summarization</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div id="summarize-results">
+  {% if plan is not none %}
+    {% include "_summarize_results.html" %}
+  {% else %}
+    <p style="color:var(--text-muted);">Select a scope and press Plan Summarization.</p>
+  {% endif %}
+</div>
+
+<div id="spinner" class="htmx-indicator" style="text-align:center;padding:20px;display:none;color:var(--text-muted);">
+  Planning…
+</div>
+{% endblock %}

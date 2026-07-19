@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Edit Memory — Mnema{% endblock %}
+{% block content %}
+<div style="margin-bottom:12px;">
+  <a href="/memories/{{ record.id }}" style="font-size:0.9rem;">← Back to Memory</a>
+</div>
+
+<h1 class="page-title" style="font-size:1.2rem;">Edit Memory</h1>
+
+<form method="post" action="/memories/{{ record.id }}/edit">
+  <div class="card">
+    <div class="form-group">
+      <label>Text</label>
+      <textarea class="form-control" name="text" required>{{ record.text }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Scope</label>
+      <input class="form-control" name="scope" value="{{ record.scope }}" style="width:auto;">
+    </div>
+
+    <div class="form-group">
+      <label>Importance</label>
+      <div class="importance-pills" x-data>
+        {% for val in importance_values %}
+        <button type="button"
+          class="importance-pill {% if val == int(record.importance) %}selected{% endif %}"
+          onclick="document.querySelectorAll('.importance-pill').forEach(p=>p.classList.remove('selected')); this.classList.add('selected'); document.getElementById('imp-input').value=this.dataset.val;"
+          data-val="{{ val }}"
+        >{{ val }}</button>
+        {% endfor %}
+        <input type="hidden" name="importance" id="imp-input" value="{{ int(record.importance) }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Tags (comma-separated)</label>
+      <input class="form-control" name="tags" value="{{ record.tags|join(', ') }}" placeholder="tag1, tag2, tag3">
+    </div>
+
+    <div class="form-group">
+      <label>Metadata (JSON)</label>
+      <textarea class="form-control" name="metadata_json" style="font-family:monospace;font-size:0.85rem;">{{ json.dumps(record.metadata, indent=2) if record.metadata else '{}' }}</textarea>
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="/memories/{{ record.id }}" class="btn">Cancel</a>
+  </div>
+</form>
+
+<script>
+document.querySelector('.importance-pill.selected')?.click();
+</script>
+{% endblock %}
