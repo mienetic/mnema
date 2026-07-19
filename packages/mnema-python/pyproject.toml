@@ -110,6 +110,8 @@ ignore = ["E501", "N802", "N806", "N818"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["B011", "B017"]
+# Dashboard templates use `stats` via Jinja2 context (ruff can't see template usage).
+"src/mnema/dashboard/app.py" = ["F841"]
 
 [tool.mypy]
 python_version = "3.10"
