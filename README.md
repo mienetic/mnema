@@ -78,9 +78,7 @@ curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install
   | MNEMA_EXTRAS=all bash
 ```
 
-Available extras: `chroma`, `qdrant`, `sqlite_vec`, `local`, `openai`, `ollama`,
-`default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and
-[docs/embedding-providers.md](docs/embedding-providers.md).
+Available extras: `chroma`, `qdrant`, `sqlite_vec`, `pgvector`, `lancedb`, `local`, `openai`, `ollama`, `api`, `default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and [docs/embedding-providers.md](docs/embedding-providers.md).
 
 ### Manual / from source
 
@@ -294,7 +292,7 @@ Ready-to-copy configs for all clients are in [`examples/`](examples/).
 | `mnema_apply_decay` | Find/forget low-value memories | 🗑️ |
 | `mnema_stats` | Aggregate store stats | 🔍 |
 
-Plus **resources** (`mnema://memory/{id}`, `mnema://scope/{s}/summary`, `mnema://stats`) and **prompt templates** (`summarize_scope`, `recall_for`).
+Plus **resources** (`mnema://memory/{id}`, `mnema://scope/{s}/summary`, `mnema://stats`) and **prompt templates** (`recall_for`, `remember_this`, `summarize_scope`).
 
 See **[SKILL.md](SKILL.md)** for the full agent-facing usage guide.
 
@@ -387,7 +385,7 @@ All settings are environment-driven (or `.env`):
 
 | Variable | Default | Description |
 |---|---|---|
-| `MNEMA_BACKEND` | `chroma` | `chroma` \| `qdrant` \| `sqlite_vec` |
+| `MNEMA_BACKEND` | `chroma` | `chroma` \| `qdrant` \| `sqlite_vec` \| `pgvector` \| `lancedb` |
 | `MNEMA_BACKEND_PATH` | `.mnema/data` | Local path or remote URL (`http://…`) |
 | `MNEMA_BACKEND_COLLECTION` | `memories` | Collection/table name |
 | `MNEMA_EMBEDDING` | `local` | `local` (offline) \| `openai` \| `ollama` |
@@ -404,6 +402,10 @@ All settings are environment-driven (or `.env`):
 | `MNEMA_TRANSPORT` | `stdio` | `stdio` \| `http` |
 | `MNEMA_HTTP_HOST` | `127.0.0.1` | HTTP bind host |
 | `MNEMA_HTTP_PORT` | `8000` | HTTP bind port |
+| `MNEMA_DREAM_ENABLED` | `false` | Auto Dream background consolidation |
+| `MNEMA_DREAM_INTERVAL_SECONDS` | `3600` | Seconds between dream cycles |
+| `MNEMA_DREAM_DECAY_THRESHOLD` | `0.05` | Decay cutoff for forgetting during dreams |
+| `MNEMA_LOG_LEVEL` | `WARNING` | `DEBUG` \| `INFO` \| `WARNING` \| `ERROR` — verbose logs for bug reports |
 
 ---
 
@@ -534,7 +536,7 @@ mnema/
 ┌──────────────┐    MCP     ┌──────────────────┐
 │  AI Client   │◄──────────►│   Mnema Server   │
 └──────────────┘  (stdio/   │  ┌────────────┐  │
-                  HTTP)     │  │ 10 tools   │  │
+                  HTTP)     │  │ 11 tools   │  │
                             │  └──────┬─────┘  │
                             │  ┌──────▼─────┐  │
                             │  │  Service   │  │
@@ -544,8 +546,8 @@ mnema/
                             │ └──┬───┘ └──┬───┘ │
                             └────┼─────────┼────┘
                                  │         │
-                    sentence-    │  Chroma/Qdrant/
-                    transformers │  sqlite-vec
+                    sentence-    │  Chroma/Qdrant/sqlite-vec/
+                    transformers │  pgvector/LanceDB
                     (local)      │
                                  ▼         ▼
                               vectors  + metadata
@@ -579,7 +581,7 @@ See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and
 ## 🙏 Acknowledgements
 
 - [Model Context Protocol](https://modelcontextprotocol.io) — the protocol that makes this possible.
-- [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec) — excellent open-source vector stores.
+- [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec), [pgvector](https://github.com/pgvector/pgvector), [LanceDB](https://lancedb.github.io/) — excellent open-source vector stores.
 - [sentence-transformers](https://www.sbert.net/) — offline embeddings for everyone.
 - **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama provider), [@Nitjsefnie](https://github.com/Nitjsefnie) (REST API + browser extension + Node CI + MCP registry), [@Adiiiipawar](https://github.com/Adiiiipawar) (pgvector), [@Oneshot1123](https://github.com/Oneshot1123) (LanceDB), [@NEMEZIZ1234](https://github.com/NEMEZIZ1234) (web dashboard).
 
