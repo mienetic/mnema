@@ -14,6 +14,7 @@ from mnema.service import MemoryService
 from tests.fakes import (
     HashingEmbedding,
     skip_no_chroma,
+    skip_no_lancedb,
     skip_no_qdrant,
     skip_no_sqlite_vec,
 )
@@ -95,6 +96,27 @@ class TestSqliteVecBackend:
         )
         emb = HashingEmbedding(dim=64)
         backend = SqliteVecBackend(cfg)
+        svc = MemoryService(cfg, backend=backend, embedding=emb)
+        try:
+            await _roundtrip(svc)
+        finally:
+            await svc.aclose()
+
+
+@skip_no_lancedb
+class TestLanceDBBackend:
+    async def test_roundtrip(self, tmp_path):
+        from mnema.backends.lancedb import LanceDBBackend
+
+        cfg = MnemaConfig(
+            backend="lancedb",
+            backend_path=str(tmp_path / "lancedb"),
+            embedding="local",
+            embedding_model="all-MiniLM-L6-v2",
+            embedding_dim=64,
+        )
+        emb = HashingEmbedding(dim=64)
+        backend = LanceDBBackend(cfg)
         svc = MemoryService(cfg, backend=backend, embedding=emb)
         try:
             await _roundtrip(svc)

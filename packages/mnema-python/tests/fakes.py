@@ -243,6 +243,15 @@ def sqlite_vec_available() -> bool:
         return False
 
 
+def lancedb_available() -> bool:
+    try:
+        import lancedb  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
+
+
 def st_available() -> bool:
     try:
         import sentence_transformers  # noqa: F401
@@ -256,6 +265,9 @@ skip_no_chroma = pytest.mark.skipif(not chroma_available(), reason="chromadb not
 skip_no_qdrant = pytest.mark.skipif(not qdrant_available(), reason="qdrant-client not installed")
 skip_no_sqlite_vec = pytest.mark.skipif(
     not sqlite_vec_available(), reason="sqlite-vec not installed"
+)
+skip_no_lancedb = pytest.mark.skipif(
+    not lancedb_available(), reason="lancedb not installed"
 )
 skip_no_st = pytest.mark.skipif(
     not st_available(), reason="sentence-transformers not installed"

@@ -16,7 +16,7 @@
 ## ✨ Features
 
 - **🔌 MCP-native** — drop it into Claude Desktop, Claude Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode, or any MCP-compatible client.
-- **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), or sqlite-vec (pure-SQLite, zero-dep).
+- **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), sqlite-vec (pure-SQLite), or LanceDB (columnar, high-performance).
 - **🧠 Pluggable embeddings** — sentence-transformers (offline, default), OpenAI, or Ollama (local server).
 - **🔍 Hybrid search** — combines **semantic similarity** + **tag overlap** + **decay scoring** into a single ranked score.
 - **⏳ Memory decay** — a forgetting curve (`recency × frequency × importance`) so the store stays focused on what matters.
@@ -78,7 +78,7 @@ curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install
   | MNEMA_EXTRAS=all bash
 ```
 
-Available extras: `chroma`, `qdrant`, `sqlite_vec`, `local`, `openai`, `ollama`,
+Available extras: `chroma`, `qdrant`, `sqlite_vec`, `lancedb`, `local`, `openai`, `ollama`,
 `default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and
 [docs/embedding-providers.md](docs/embedding-providers.md).
 
@@ -417,10 +417,11 @@ All settings are environment-driven (or `.env`):
 ## 🗄️ Choosing a backend
 
 | Backend | Install extra | Embedded? | Best for |
-|---|---|---|---|
+|---|---|---|---|---|
 | **Chroma** (default) | `chroma` | ✅ in-process + persistent | Quick start, single-user, dev |
 | **Qdrant** | `qdrant` | ✅ local path / `:memory:` / remote | Production, high scale, metadata filtering |
 | **sqlite-vec** | `sqlite_vec` | ✅ pure SQLite | Smallest footprint, constrained envs |
+| **LanceDB** | `lancedb` | ✅ embedded columnar | High-performance local, large stores |
 
 Switch backends by reinstalling with the right extra and setting the env var:
 
@@ -557,7 +558,7 @@ mnema/
 ├── packages/
 │   ├── mnema-python/         # ⭐ MCP server + SDK + CLI + REST API (Python)
 │   │   ├── src/mnema/
-│   │   │   ├── backends/     # chroma, qdrant, sqlite_vec
+│   │   │   ├── backends/     # chroma, qdrant, sqlite_vec, lancedb
 │   │   │   ├── embeddings/   # sentence_transformers, openai, ollama
 │   │   │   ├── tools/        # 11 MCP tools
 │   │   │   ├── api/          # REST API (FastAPI) — `mnema serve`
@@ -601,8 +602,8 @@ mnema/
                             │ └──┬───┘ └──┬───┘ │
                             └────┼─────────┼────┘
                                  │         │
-                    sentence-    │  Chroma/Qdrant/
-                    transformers │  sqlite-vec
+                     sentence-    │  Chroma/Qdrant/
+                     transformers │  sqlite-vec/LanceDB
                     (local)      │
                                  ▼         ▼
                               vectors  + metadata
@@ -621,9 +622,9 @@ where `decay = recency(half-life) × frequency × importance`.
 
 ## 🗺️ Roadmap
 
-**Shipped:** Python MCP server · CLI (20 subcommands) · REST API (`mnema serve`) · browser extension · Chroma/Qdrant/sqlite-vec backends · local/OpenAI/Ollama embeddings · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
+**Shipped:** Python MCP server · CLI (20 subcommands) · REST API (`mnema serve`) · browser extension · Chroma/Qdrant/sqlite-vec/LanceDB backends · local/OpenAI/Ollama embeddings · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
 
-**In progress (contributors):** pgvector backend · LanceDB backend · Cohere/Voyage/Nomic embeddings · web dashboard · Slack/Discord bot.
+**In progress (contributors):** pgvector backend · Cohere/Voyage/Nomic embeddings · web dashboard · Slack/Discord bot.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 
