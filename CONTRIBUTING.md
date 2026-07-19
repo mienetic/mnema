@@ -40,19 +40,21 @@ isn't installed, so a minimal install still runs the core + service tests.
 
 ```
 src/mnema/
-├── backends/          # vector stores: chroma.py, qdrant.py, sqlite_vec.py
-├── embeddings/        # embedding providers: sentence_transformers.py, openai.py, ollama.py
+├── backends/          # vector stores: chroma, qdrant, sqlite_vec, pgvector, lancedb
+├── embeddings/        # embedding providers: sentence_transformers, openai, ollama
 ├── tools/             # 11 MCP tools, one concern per file
 ├── api/               # REST API (FastAPI) — `mnema serve`
-├── cli.py             # terminal CLI (20 subcommands: add, recall, search, dream, eval, …)
+├── dashboard/         # web UI (htmx + Jinja2) — `mnema dashboard`
+├── cli.py             # terminal CLI (22 subcommands)
 ├── service.py         # orchestration (the only place backends + embeddings meet)
 ├── decay.py           # forgetting curve (pure functions)
 ├── summarize.py       # summarization planner (pure functions)
 ├── dream.py           # Auto Dream background scheduler
 ├── eval_harness.py    # recall evaluation (recall@k + MRR)
+├── diagnostics.py     # logging + error reporting
 ├── sdk.py             # programmatic Python client
 └── server.py          # FastMCP bootstrap + lifespan
-tests/                 # pytest (129 tests); fakes.py has in-memory backend + hashing embedding
+tests/                 # pytest (142 tests); fakes.py has in-memory backend + hashing embedding
 ```
 
 ## How to add a new vector backend
@@ -207,6 +209,28 @@ Routes live in `src/mnema/api/app.py` — every route is a thin delegation to
 3. Add tests in `tests/test_api.py` using FastAPI's `TestClient` against the
    in-memory fake service (no live server needed).
 
+## How to add a dashboard page
+
+The web dashboard lives in `src/mnema/dashboard/` (htmx + Jinja2Templates,
+contributed by @NEMEZIZ1234). The pattern:
+
+1. Add a Jinja2 template in `src/mnema/dashboard/templates/your_page.html`
+   (extend `base.html`).
+2. Add a route in `create_dashboard_app()` in `src/mnema/dashboard/app.py`:
+   ```python
+   @app.get("/your-page", response_class=HTMLResponse, include_in_schema=False)
+   async def your_page(request: Request):
+       stats = await _stats_or_none()
+       return templates.TemplateResponse(
+           request, "your_page.html",
+           {"request": request, "stats": stats, "nav": _nav(stats)},
+       )
+   ```
+3. For htmx partials (inline updates), use `hx-post` / `hx-get` pointing at
+   a route that returns a partial template (see `_search_results.html`).
+4. Note: `ruff` may flag `stats` as unused — it's used by the Jinja2
+   template context, so it's already suppressed in `pyproject.toml`.
+
 ## Before you submit
 
 - [ ] `ruff check src/ tests/` is clean.
@@ -250,11 +274,10 @@ Open an issue with:
 Check the [issue tracker](https://github.com/mienetic/mnema/issues) for the
 full list. Look for `good first issue` and `claimed` labels. Highlights:
 
-- **#3** — Web dashboard (frontend)
-- **#5** — LanceDB backend
 - **#7** — Cohere / Voyage / Nomic embedding providers
 - **#8** — TypeScript MCP server
+- **#10** — Auth + multi-tenant for HTTP transport
+- **#11** — Observability (Prometheus metrics)
 - **#19** — Slack / Discord bot
-- **#20** — Browser extension
 
 Thanks for helping make AI memory better! 💜
