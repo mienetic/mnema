@@ -41,14 +41,15 @@ and stores.
 
 | | Item | Status |
 |---|---|---|
-| 🚧 | More backends: pgvector, LanceDB, Weaviate | pgvector claimed by @Adiiiipawar, LanceDB by @Oneshot1123 |
+| ✅ | **pgvector backend** — Postgres + vector extension (asyncpg, parameterized) | done by @Adiiiipawar (#25) |
+| ✅ | **LanceDB backend** — embedded columnar vector store | done by @Oneshot1123 (#27) |
 | 🚧 | More embedding providers: Cohere, Voyage, Nomic | claimed by @jaineel132 |
-| 🚧 | **Web dashboard** — browse / search / forget memories in a browser | claimed by @NEMEZIZ1234 |
+| ✅ | **Web dashboard** — htmx + Jinja2 UI (`mnema dashboard`) | done by @NEMEZIZ1234 (#28) |
 | ✅ | **REST API (non-MCP)** — `GET /memories`, `POST /search`, … via FastAPI (`mnema serve`) | done by @Nitjsefnie (#22) |
 | ✅ | **Browser extension** — select text → right-click "Remember this" → save (MV3) | done by @Nitjsefnie (#23) |
+| ✅ | **MCP registry manifest** (`server.json`) — ready for submission | done by @Nitjsefnie (#26) |
 | 📋 | **Slack / Discord bot** — auto-remember facts from chat (`packages/mnema-bot/`) | planned |
 | 📋 | TypeScript MCP server (`packages/mnema-ts/`) | planned (waiting for demand) |
-| 📋 | Submit to the [MCP server registry](https://github.com/modelcontextprotocol/servers) | planned (maintainer task) |
 
 ## Phase 3 — Production-grade 📋
 

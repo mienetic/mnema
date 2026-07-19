@@ -93,6 +93,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   (sqlite_vec → `data/mnema.db`, qdrant → `data/qdrant`, chroma → `data/`).
 
   All three were found during end-to-end testing after v0.2.0.
+- **pgvector backend** — Postgres + the `vector` extension, via `asyncpg`
+  with parameterized queries (`$1, $2, ...` + `*params`). Cosine distance
+  via `<=>`. Contributed by [@Adiiiipawar](https://github.com/Adiiiipawar).
+  ([#4](https://github.com/mienetic/mnema/issues/4), [#25](https://github.com/mienetic/mnema/pull/25))
+- **LanceDB backend** — embedded, serverless columnar vector store. Wraps
+  the sync LanceDB API in `anyio.to_thread.run_sync`. Contributed by
+  [@Oneshot1123](https://github.com/Oneshot1123).
+  ([#5](https://github.com/mienetic/mnema/issues/5), [#27](https://github.com/mienetic/mnema/pull/27))
+- **🖥️ Web dashboard** (`mnema dashboard`) — browser UI (htmx + Jinja2) to
+  browse, search, edit, forget memories + trigger decay/summarize. No build
+  step, no JS framework. Contributed by [@NEMEZIZ1234](https://github.com/NEMEZIZ1234).
+  ([#3](https://github.com/mienetic/mnema/issues/3), [#28](https://github.com/mienetic/mnema/pull/28))
+- **MCP registry manifest** (`server.json`) — ready for submission to the
+  official MCP server registry. Contributed by [@Nitjsefnie](https://github.com/Nitjsefnie).
+  ([#21](https://github.com/mienetic/mnema/issues/21), [#26](https://github.com/mienetic/mnema/pull/26))
 
 ## [0.1.0] — 2026-07-13
 

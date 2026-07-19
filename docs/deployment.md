@@ -88,8 +88,21 @@ Endpoints: `GET/POST /memories`, `GET/PATCH/DELETE /memories/{id}`,
 [`docs/architecture.md`](architecture.md#rest-api-layer-apiapppy) for the
 full list.
 
-This is what the **web dashboard** (#3) and **browser extension** (#20)
-build on.
+This is what the **browser extension** builds on.
+
+## 5. Dashboard mode (`mnema dashboard`)
+
+A browser UI (htmx + Jinja2) for browsing, searching, editing, and forgetting
+memories without any AI client or terminal:
+
+```bash
+mnema dashboard --port 8080
+# Open http://localhost:8080 in your browser
+```
+
+Features: stats overview, paginated memory list (filter by scope), memory
+detail/edit/forget, hybrid search with score breakdown, decay sweep, scope
+summarization planner. Needs the `[api]` extra.
 
 ## Auto Dream (background consolidation)
 

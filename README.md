@@ -16,16 +16,20 @@
 ## ✨ Features
 
 - **🔌 MCP-native** — drop it into Claude Desktop, Claude Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode, or any MCP-compatible client.
-- **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), or sqlite-vec (pure-SQLite, zero-dep).
+- **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), sqlite-vec (pure-SQLite), pgvector (Postgres), or LanceDB (embedded columnar).
 - **🧠 Pluggable embeddings** — sentence-transformers (offline, default), OpenAI, or Ollama (local server).
 - **🔍 Hybrid search** — combines **semantic similarity** + **tag overlap** + **decay scoring** into a single ranked score.
 - **⏳ Memory decay** — a forgetting curve (`recency × frequency × importance`) so the store stays focused on what matters.
+- **🌙 Auto Dream** — optional background scheduler that consolidates memories while the server is idle (forget decayed + plan summarization), like a brain sleeping.
 - **📝 Summarization** — plans how to condense many memories into a few high-level ones; the calling AI executes the plan (Mnema never calls an LLM on its own).
 - **👥 Multi-user / multi-session** — scope-based namespace isolation (`user:alice`, `session:abc`, `agent:bot-1`).
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
-- **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
-- **🧪 Well-tested** — 104 tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
+- **💻 CLI** — `mnema add`, `mnema recall`, `mnema dream`, `mnema eval`, `mnema dashboard`… 20+ subcommands for terminal-first workflows.
+- **🌐 REST API** — `mnema serve` exposes all memory operations over plain HTTP (FastAPI) for non-AI apps.
+- **🖥️ Web dashboard** — `mnema dashboard` opens a browser UI (htmx + Jinja2) to browse, search, edit, forget, and trigger decay/summarize — no AI client needed.
+- **🧩 Browser extension** — select text on any page → right-click "Remember this" → adjust scope/tags → save (Chrome/Edge/Firefox 115+, Manifest V3).
+- **🧪 Well-tested** — 142 Python tests + 51 JS tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
 
 ---
 
@@ -332,6 +336,10 @@ mnema eval                               # seed + run 24 queries, print report
 
 # Re-embed after switching embedding model (see docs/embedding-providers.md)
 mnema re-embed
+
+# Servers
+mnema serve --port 8000              # REST API (FastAPI) for non-AI apps
+mnema dashboard --port 8080          # Web UI (htmx + Jinja2) for browsing memories
 ```
 
 Add `--json` to any read command for machine-readable output. Run
@@ -407,6 +415,7 @@ All settings are environment-driven (or `.env`):
 | **Qdrant** | `qdrant` | ✅ local path / `:memory:` / remote | Production, high scale, metadata filtering |
 | **sqlite-vec** | `sqlite_vec` | ✅ pure SQLite | Smallest footprint, constrained envs |
 | **pgvector** | `pgvector` | ❌ requires Postgres server | Production, existing Postgres infra |
+| **LanceDB** | `lancedb` | ✅ embedded columnar | High-performance local, large stores |
 
 Switch backends by reinstalling with the right extra and setting the env var:
 
@@ -488,20 +497,28 @@ See [`docker/`](docker/) for the Dockerfile and compose setup.
 ```
 mnema/
 ├── packages/
-│   └── mnema-python/         # ⭐ MCP server + SDK + CLI (Python)
-│       ├── src/mnema/
-│       │   ├── backends/     # chroma, qdrant, sqlite_vec
-│       │   ├── embeddings/   # sentence_transformers, openai, ollama
-│       │   ├── tools/        # 11 MCP tools
-│       │   ├── cli.py        # terminal CLI (add/recall/search/...)
-│       │   ├── service.py    # orchestration
-│       │   ├── decay.py      # forgetting curve
-│       │   ├── summarize.py  # summarization planner
-│       │   ├── sdk.py        # programmatic SDK
-│       │   └── server.py     # FastMCP bootstrap
-│       └── tests/            # 104 tests (unit + backend matrix + eval)
+│   ├── mnema-python/         # ⭐ MCP server + SDK + CLI + REST API + dashboard
+│   │   ├── src/mnema/
+│   │   │   ├── backends/     # chroma, qdrant, sqlite_vec, pgvector, lancedb
+│   │   │   ├── embeddings/   # sentence_transformers, openai, ollama
+│   │   │   ├── tools/        # 11 MCP tools
+│   │   │   ├── api/          # REST API (FastAPI) — `mnema serve`
+│   │   │   ├── dashboard/    # web UI (htmx + Jinja2) — `mnema dashboard`
+│   │   │   ├── cli.py        # terminal CLI (22 subcommands)
+│   │   │   ├── service.py    # orchestration
+│   │   │   ├── decay.py      # forgetting curve
+│   │   │   ├── summarize.py  # summarization planner
+│   │   │   ├── dream.py      # 🌙 Auto Dream scheduler
+│   │   │   ├── eval_harness.py  # recall@k evaluation
+│   │   │   ├── diagnostics.py   # logging + error reporting
+│   │   │   ├── sdk.py        # programmatic SDK
+│   │   │   └── server.py     # FastMCP bootstrap
+│   │   └── tests/            # 142 tests (unit + backend matrix + eval + dream + diagnostics)
+│   └── mnema-extension/      # 🧩 browser extension (MV3) — "Remember this" over the REST API
+│       ├── src/              # popup, options, background service worker
+│       └── test/             # 51 JS tests (node:test)
 ├── docker/                   # Dockerfile + compose
-├── docs/                     # architecture, backends, deployment
+├── docs/                     # architecture, backends, deployment, embedding-providers
 ├── examples/                 # client config examples
 ├── scripts/                  # one-line installer + updater
 ├── SKILL.md                  # agent-facing usage guide
@@ -547,9 +564,9 @@ where `decay = recency(half-life) × frequency × importance`.
 
 ## 🗺️ Roadmap
 
-**Done in v0.1.0:** Python MCP server · Chroma/Qdrant/sqlite-vec backends · local/OpenAI/Ollama embeddings · hybrid search with decay · summarization planner · Python SDK · CLI (`add`/`recall`/`search`/`export`/`import`/`re-embed`/...) · auto-recall & auto-remember prompt hooks · `--doctor --fix` · one-line installer · per-agent setup guides for 8 clients.
+**Shipped:** Python MCP server · CLI (22 subcommands) · REST API (`mnema serve`) · web dashboard (`mnema dashboard`) · browser extension · 5 vector backends (Chroma/Qdrant/sqlite-vec/pgvector/LanceDB) · local/OpenAI/Ollama embeddings · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
 
-**Next up (Phase 1–2):** web dashboard · pgvector backend · more embedding providers (Cohere/Voyage/Nomic).
+**In progress (contributors):** Cohere/Voyage/Nomic embeddings · Slack/Discord bot.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 
@@ -564,7 +581,7 @@ See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and
 - [Model Context Protocol](https://modelcontextprotocol.io) — the protocol that makes this possible.
 - [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec) — excellent open-source vector stores.
 - [sentence-transformers](https://www.sbert.net/) — offline embeddings for everyone.
-- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama embedding provider).
+- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama provider), [@Nitjsefnie](https://github.com/Nitjsefnie) (REST API + browser extension + Node CI + MCP registry), [@Adiiiipawar](https://github.com/Adiiiipawar) (pgvector), [@Oneshot1123](https://github.com/Oneshot1123) (LanceDB), [@NEMEZIZ1234](https://github.com/NEMEZIZ1234) (web dashboard).
 
 ---
 

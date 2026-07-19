@@ -53,6 +53,13 @@ over HTTP: `GET/POST /memories`, `GET/PATCH/DELETE /memories/{id}`,
 `POST /search`, `POST /recall`, `GET /scopes`, `GET /stats`. Contributed
 by @Nitjsefnie. Lazy-imported so `import mnema` stays light.
 
+### Dashboard layer (`dashboard/app.py`)
+A browser UI (`mnema dashboard`) built with FastAPI + Jinja2Templates + htmx
+(no build step, no JS framework). Routes: `/` (stats + scope list),
+`/memories` (CRUD), `/search` (hybrid search with htmx partials), `/decay`
+(decay sweep), `/summarize` (scope summarization). Contributed by
+@NEMEZIZ1234. Shares the same `MemoryService` as every other interface.
+
 ### Service layer (`service.py`)
 The single orchestration point. It:
 1. Resolves scopes (with validation).
@@ -121,13 +128,14 @@ model/HTTP client) and the backend (closes any connection/file handle).
 
 ## Transport / interfaces
 
-Mnema exposes three interfaces, all sharing the same `MemoryService`:
+Mnema exposes **five** interfaces, all sharing the same `MemoryService`:
 
 | Interface | Command | Best for |
 |---|---|---|
 | **MCP (stdio)** | `mnema` | AI clients (Claude Desktop, Cursor, Zed, …) |
 | **MCP (streamable HTTP)** | `mnema --transport http` | remote / multi-client MCP |
-| **REST API** | `mnema serve --port 8000` | non-AI apps, dashboards, scripts |
+| **REST API** | `mnema serve --port 8000` | non-AI apps, browser extension |
+| **Web dashboard** | `mnema dashboard --port 8080` | browsing memories in a browser |
 | **CLI** | `mnema add`, `mnema recall`, … | terminal / scripting |
 | **Python SDK** | `from mnema.sdk import MemoryClient` | embedding in Python apps |
 

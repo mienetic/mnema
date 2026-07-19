@@ -37,9 +37,12 @@ mnema --doctor
 | `chroma` | ChromaDB (embedded, default backend) |
 | `qdrant` | Qdrant client (local or remote) |
 | `sqlite_vec` | sqlite-vec loadable extension |
+| `pgvector` | asyncpg + pgvector (Postgres backend) |
 | `lancedb` | LanceDB embedded columnar vector DB |
 | `local` | sentence-transformers (offline embeddings) |
 | `openai` | OpenAI embeddings |
+| `ollama` | Ollama embeddings (local server) |
+| `api` | FastAPI + uvicorn (REST API + dashboard) |
 | `all` | everything above |
 
 You can combine extras: `MNEMA_EXTRAS="qdrant,openai"`, or install everything
@@ -92,6 +95,22 @@ MNEMA_BACKEND_PATH=~/.mnema-data/mnema.db
 - Loads `sqlite-vec` into a standard `sqlite3` connection.
 - Stores vectors in a `vec0` virtual table; metadata in a normal table.
 - Great for constrained environments (lambdas, edge, single-binary distros).
+
+## pgvector
+
+**Postgres + the `vector` extension. For teams with existing Postgres.**
+
+Install with: `MNEMA_EXTRAS=pgvector bash scripts/install.sh`
+
+```
+MNEMA_BACKEND=pgvector
+MNEMA_BACKEND_PATH=postgresql://user:pass@localhost:5432/mnema
+```
+
+- Uses `asyncpg` (async) with parameterized queries — no SQL injection risk.
+- Cosine distance via the `<=>` operator.
+- Auto-creates the `memories` table + the `vector` extension on first run.
+- Contributed by @Adiiiipawar.
 
 ## LanceDB
 
