@@ -9,7 +9,7 @@ interface.
 | **Chroma** | ✅ in-process | `chromadb` | 384 | local dir | default, dev, single-user |
 | **Qdrant** | ✅ local path / `:memory:` / remote | `qdrant-client` | 384 | local or remote | production, high scale |
 | **sqlite-vec** | ✅ pure SQLite | `sqlite-vec` | 384 | SQLite file | smallest footprint |
-| **pgvector** 🚧 | ✅ Postgres extension | `asyncpg` + `pgvector` | 384 | Postgres | teams with existing Postgres *(in progress — #4)* |
+| **pgvector** | ✅ Postgres extension | `asyncpg` + `pgvector` | 384 | Postgres | teams with existing Postgres |
 | **LanceDB** | ✅ embedded columnar | `lancedb` | 384 | local files | high-performance local |
 
 ## Selecting a backend

@@ -16,20 +16,16 @@
 ## ✨ Features
 
 - **🔌 MCP-native** — drop it into Claude Desktop, Claude Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode, or any MCP-compatible client.
-- **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), sqlite-vec (pure-SQLite), or LanceDB (columnar, high-performance).
+- **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), or sqlite-vec (pure-SQLite, zero-dep).
 - **🧠 Pluggable embeddings** — sentence-transformers (offline, default), OpenAI, or Ollama (local server).
 - **🔍 Hybrid search** — combines **semantic similarity** + **tag overlap** + **decay scoring** into a single ranked score.
 - **⏳ Memory decay** — a forgetting curve (`recency × frequency × importance`) so the store stays focused on what matters.
-- **🌙 Auto Dream** — optional background scheduler that consolidates memories while the server is idle (forget decayed + plan summarization), like a brain sleeping.
 - **📝 Summarization** — plans how to condense many memories into a few high-level ones; the calling AI executes the plan (Mnema never calls an LLM on its own).
 - **👥 Multi-user / multi-session** — scope-based namespace isolation (`user:alice`, `session:abc`, `agent:bot-1`).
 - **🔧 Offline by default** — local sentence-transformers embeddings; no API keys required to start.
 - **📦 Programmatic SDK** — use Mnema from Python without standing up an MCP server.
 - **💻 CLI** — `mnema add`, `mnema recall`, `mnema stats`… for terminal-first workflows.
-- **🌐 REST API** — `mnema serve` exposes all memory operations over plain HTTP (FastAPI) for non-AI apps.
-- **🧩 Browser extension** — select text on any page → right-click "Remember this" → adjust scope/tags → save (Chrome/Edge/Firefox 115+, Manifest V3).
-- **🧪 Well-tested** — 142 Python tests + 51 JS tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
-- **🐛 Friendly error reporting** — unexpected crashes produce a pre-filled GitHub issue link with full diagnostics (version, backend, embedding, traceback) so users can report bugs in one click. Set `MNEMA_LOG_LEVEL=DEBUG` for verbose logs.
+- **🧪 Well-tested** — 104 tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
 
 ---
 
@@ -78,7 +74,7 @@ curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install
   | MNEMA_EXTRAS=all bash
 ```
 
-Available extras: `chroma`, `qdrant`, `sqlite_vec`, `lancedb`, `local`, `openai`, `ollama`,
+Available extras: `chroma`, `qdrant`, `sqlite_vec`, `local`, `openai`, `ollama`,
 `default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and
 [docs/embedding-providers.md](docs/embedding-providers.md).
 
@@ -334,15 +330,8 @@ mnema restore mnema-backup.tar.gz
 # Evaluate recall quality (recall@k + MRR)
 mnema eval                               # seed + run 24 queries, print report
 
-# Dream — consolidate memories (forget decayed + plan summarization)
-mnema dream                              # run a single dream cycle manually
-# (or enable background dreaming: MNEMA_DREAM_ENABLED=true)
-
 # Re-embed after switching embedding model (see docs/embedding-providers.md)
 mnema re-embed
-
-# REST API (for non-AI apps, dashboards, browser extension)
-mnema serve --port 8000             # GET/POST /memories, POST /search, ...
 ```
 
 Add `--json` to any read command for machine-readable output. Run
@@ -407,21 +396,17 @@ All settings are environment-driven (or `.env`):
 | `MNEMA_TRANSPORT` | `stdio` | `stdio` \| `http` |
 | `MNEMA_HTTP_HOST` | `127.0.0.1` | HTTP bind host |
 | `MNEMA_HTTP_PORT` | `8000` | HTTP bind port |
-| `MNEMA_DREAM_ENABLED` | `false` | Auto Dream background consolidation |
-| `MNEMA_DREAM_INTERVAL_SECONDS` | `3600` | Seconds between dream cycles |
-| `MNEMA_DREAM_DECAY_THRESHOLD` | `0.05` | Decay cutoff for forgetting during dreams |
-| `MNEMA_LOG_LEVEL` | `WARNING` | `DEBUG` \| `INFO` \| `WARNING` \| `ERROR` — verbose logs for bug reports |
 
 ---
 
 ## 🗄️ Choosing a backend
 
 | Backend | Install extra | Embedded? | Best for |
-|---|---|---|---|---|
+|---|---|---|---|
 | **Chroma** (default) | `chroma` | ✅ in-process + persistent | Quick start, single-user, dev |
 | **Qdrant** | `qdrant` | ✅ local path / `:memory:` / remote | Production, high scale, metadata filtering |
 | **sqlite-vec** | `sqlite_vec` | ✅ pure SQLite | Smallest footprint, constrained envs |
-| **LanceDB** | `lancedb` | ✅ embedded columnar | High-performance local, large stores |
+| **pgvector** | `pgvector` | ❌ requires Postgres server | Production, existing Postgres infra |
 
 Switch backends by reinstalling with the right extra and setting the env var:
 
@@ -498,85 +483,25 @@ See [`docker/`](docker/) for the Dockerfile and compose setup.
 
 ---
 
-## 📋 MCP Registry
-
-Mnema is not yet listed on the [official MCP Registry](https://registry.modelcontextprotocol.io/)
-([modelcontextprotocol/registry](https://github.com/modelcontextprotocol/registry)). Listing
-there is a **maintainer-only action** — the registry namespace
-(`io.github.mienetic/mnema`) is proven via GitHub OAuth for the `mienetic` account,
-so only the repo owner can complete the submission. This section tracks what's
-ready and what's left.
-
-> **Process note:** [issue #21](https://github.com/mienetic/mnema/issues/21) pointed
-> at `modelcontextprotocol/servers`' "Adding your server" flow (a PR adding a row to
-> a categorized README list). That process has since been retired — that repo's
-> README now states it "is dedicated to housing just the small number of reference
-> servers maintained by the MCP steering group" and points elsewhere for the actual
-> server directory. The current mechanism is the separate
-> [`modelcontextprotocol/registry`](https://github.com/modelcontextprotocol/registry)
-> project: a live, searchable API (`registry.modelcontextprotocol.io`) that servers
-> publish to directly via the `mcp-publisher` CLI, using a `server.json` manifest
-> validated against a published [JSON Schema](https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json).
-> There is no PR to open and no `category` field anymore (that schema has no
-> category/tag taxonomy at all — discovery is via the API's search).
-
-**Prepared:** [`packages/mnema-python/server.json`](packages/mnema-python/server.json) —
-a schema-valid manifest with the server's name, description, version, and
-repository metadata (including the `packages/mnema-python` monorepo subfolder).
-
-**Not yet possible:** the manifest has no `packages` entry. The registry only
-resolves ownership for packages published to a **supported** package registry —
-currently npm, PyPI, NuGet, Cargo/crates.io, Docker/OCI, or MCPB releases (see
-[Package Types](https://github.com/modelcontextprotocol/registry/blob/main/docs/modelcontextprotocol-io/package-types.mdx)).
-Mnema isn't on any of them yet — as [`.github/workflows/release.yml`](.github/workflows/release.yml)
-says today: *"Mnema is NOT published to PyPI — installation is via the one-line
-installer (git + uv)."* That installer has no representation in the current
-`server.json` schema, so a submission today would be a bare, install-less
-listing (discovery only, no auto-install for MCP clients).
-
-**To complete the listing** (maintainer, once ready to publish to PyPI):
-
-1. Publish the [`mnema-mcp`](packages/mnema-python/pyproject.toml) package to
-   PyPI (already named/versioned there; needs a PyPI account + `uv build` +
-   `twine upload`, or equivalent). The
-   `<!-- mcp-name: io.github.mienetic/mnema -->` ownership marker is already
-   in [`packages/mnema-python/README.md`](packages/mnema-python/README.md),
-   ready for the registry's PyPI verification step.
-2. Add a `packages` entry to `server.json`:
-   `{"registryType": "pypi", "identifier": "mnema-mcp", "version": "<published version>", "transport": {"type": "stdio"}}`.
-3. Install [`mcp-publisher`](https://github.com/modelcontextprotocol/registry/releases),
-   run `mcp-publisher login github`, then `mcp-publisher publish` from
-   `packages/mnema-python/`.
-4. Verify: `curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.mienetic/mnema"`.
-
----
-
 ## 📦 Project layout
 
 ```
 mnema/
 ├── packages/
-│   ├── mnema-python/         # ⭐ MCP server + SDK + CLI + REST API (Python)
-│   │   ├── src/mnema/
-│   │   │   ├── backends/     # chroma, qdrant, sqlite_vec, lancedb
-│   │   │   ├── embeddings/   # sentence_transformers, openai, ollama
-│   │   │   ├── tools/        # 11 MCP tools
-│   │   │   ├── api/          # REST API (FastAPI) — `mnema serve`
-│   │   │   ├── cli.py        # terminal CLI (20 subcommands)
-│   │   │   ├── service.py    # orchestration
-│   │   │   ├── decay.py      # forgetting curve
-│   │   │   ├── summarize.py  # summarization planner
-│   │   │   ├── dream.py      # 🌙 Auto Dream scheduler
-│   │   │   ├── eval_harness.py  # recall@k evaluation
-│   │   │   ├── diagnostics.py   # logging + error reporting
-│   │   │   ├── sdk.py        # programmatic SDK
-│   │   │   └── server.py     # FastMCP bootstrap
-│   │   └── tests/            # 142 tests (unit + backend matrix + eval + dream + diagnostics)
-│   └── mnema-extension/      # 🧩 browser extension (MV3) — "Remember this" over the REST API
-│       ├── src/              # popup, options, background service worker
-│       └── test/             # 51 JS tests (node:test)
+│   └── mnema-python/         # ⭐ MCP server + SDK + CLI (Python)
+│       ├── src/mnema/
+│       │   ├── backends/     # chroma, qdrant, sqlite_vec
+│       │   ├── embeddings/   # sentence_transformers, openai, ollama
+│       │   ├── tools/        # 11 MCP tools
+│       │   ├── cli.py        # terminal CLI (add/recall/search/...)
+│       │   ├── service.py    # orchestration
+│       │   ├── decay.py      # forgetting curve
+│       │   ├── summarize.py  # summarization planner
+│       │   ├── sdk.py        # programmatic SDK
+│       │   └── server.py     # FastMCP bootstrap
+│       └── tests/            # 104 tests (unit + backend matrix + eval)
 ├── docker/                   # Dockerfile + compose
-├── docs/                     # architecture, backends, deployment, embedding-providers
+├── docs/                     # architecture, backends, deployment
 ├── examples/                 # client config examples
 ├── scripts/                  # one-line installer + updater
 ├── SKILL.md                  # agent-facing usage guide
@@ -602,8 +527,8 @@ mnema/
                             │ └──┬───┘ └──┬───┘ │
                             └────┼─────────┼────┘
                                  │         │
-                     sentence-    │  Chroma/Qdrant/
-                     transformers │  sqlite-vec/LanceDB
+                    sentence-    │  Chroma/Qdrant/
+                    transformers │  sqlite-vec
                     (local)      │
                                  ▼         ▼
                               vectors  + metadata
@@ -622,9 +547,9 @@ where `decay = recency(half-life) × frequency × importance`.
 
 ## 🗺️ Roadmap
 
-**Shipped:** Python MCP server · CLI (20 subcommands) · REST API (`mnema serve`) · browser extension · Chroma/Qdrant/sqlite-vec/LanceDB backends · local/OpenAI/Ollama embeddings · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
+**Done in v0.1.0:** Python MCP server · Chroma/Qdrant/sqlite-vec backends · local/OpenAI/Ollama embeddings · hybrid search with decay · summarization planner · Python SDK · CLI (`add`/`recall`/`search`/`export`/`import`/`re-embed`/...) · auto-recall & auto-remember prompt hooks · `--doctor --fix` · one-line installer · per-agent setup guides for 8 clients.
 
-**In progress (contributors):** pgvector backend · Cohere/Voyage/Nomic embeddings · web dashboard · Slack/Discord bot.
+**Next up (Phase 1–2):** web dashboard · pgvector backend · more embedding providers (Cohere/Voyage/Nomic).
 
 See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 
@@ -639,7 +564,7 @@ See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and
 - [Model Context Protocol](https://modelcontextprotocol.io) — the protocol that makes this possible.
 - [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec) — excellent open-source vector stores.
 - [sentence-transformers](https://www.sbert.net/) — offline embeddings for everyone.
-- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama embedding provider), [@Nitjsefnie](https://github.com/Nitjsefnie) (REST API + browser extension).
+- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama embedding provider).
 
 ---
 
