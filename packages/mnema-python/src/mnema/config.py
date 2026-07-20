@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from mnema.errors import ConfigError
 
 BackendName = Literal["chroma", "qdrant", "sqlite_vec", "pgvector"]
-EmbeddingName = Literal["local", "openai", "ollama"]
+EmbeddingName = Literal["local", "openai", "ollama", "cohere", "voyage", "nomic"]
 TransportName = Literal["stdio", "http"]
 
 
@@ -54,11 +54,11 @@ class MnemaConfig(BaseSettings):
     # --- Embedding ---------------------------------------------------------
     embedding: EmbeddingName = Field(
         default="local",
-        description="Embedding provider: 'local' (sentence-transformers, offline) or 'openai'",
+        description="Embedding provider: 'local', 'openai', 'ollama', 'cohere', 'voyage', 'nomic'",
     )
     embedding_model: str = Field(
         default="all-MiniLM-L6-v2",
-        description="Model name for the chosen provider (local model or OpenAI model id)",
+        description="Model name for the chosen provider (local model or API model id)",
     )
     embedding_dim: int | None = Field(
         default=None,
@@ -78,6 +78,30 @@ class MnemaConfig(BaseSettings):
     ollama_url: str = Field(
         default="http://localhost:11434",
         description="Ollama server URL (only used when embedding='ollama')",
+    )
+    cohere_api_key: str | None = Field(
+        default=None,
+        description="Cohere API key (required when embedding='cohere')",
+    )
+    cohere_base_url: str | None = Field(
+        default=None,
+        description="Optional Cohere API base URL override",
+    )
+    voyage_api_key: str | None = Field(
+        default=None,
+        description="Voyage AI API key (required when embedding='voyage')",
+    )
+    voyage_base_url: str | None = Field(
+        default=None,
+        description="Optional Voyage AI API base URL override",
+    )
+    nomic_api_key: str | None = Field(
+        default=None,
+        description="Nomic API key (required when embedding='nomic')",
+    )
+    nomic_base_url: str | None = Field(
+        default=None,
+        description="Optional Nomic API base URL override",
     )
     # --- Behavior ----------------------------------------------------------
     default_scope: str = Field(
@@ -185,6 +209,18 @@ class MnemaConfig(BaseSettings):
             raise ConfigError(
                 "embedding='openai' requires MNEMA_OPENAI_API_KEY "
                 "(or OPENAI_API_KEY) to be set."
+            )
+        if self.embedding == "cohere" and not self.cohere_api_key:
+            raise ConfigError(
+                "embedding='cohere' requires MNEMA_COHERE_API_KEY to be set."
+            )
+        if self.embedding == "voyage" and not self.voyage_api_key:
+            raise ConfigError(
+                "embedding='voyage' requires MNEMA_VOYAGE_API_KEY to be set."
+            )
+        if self.embedding == "nomic" and not self.nomic_api_key:
+            raise ConfigError(
+                "embedding='nomic' requires MNEMA_NOMIC_API_KEY to be set."
             )
 
 

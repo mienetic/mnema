@@ -58,6 +58,12 @@ openai = ["openai>=1.40"]
 # Ollama embeddings (optional; httpx is already a core dep, so this extra
 # exists for discoverability and to keep the install matrix explicit).
 ollama = []
+# Cohere embeddings (httpx is already a core dep).
+cohere = []
+# Voyage AI embeddings (httpx is already a core dep).
+voyage = []
+# Nomic embeddings (httpx is already a core dep).
+nomic = []
 # Everything most users will want (Chroma backend + local embeddings).
 default = [
     "chromadb>=0.5",

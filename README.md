@@ -439,6 +439,9 @@ See [docs/backends.md](docs/backends.md) for full details.
 | **sentence-transformers** (default) | `local` | Offline (CPU/GPU) | 384 (`all-MiniLM-L6-v2`) |
 | **OpenAI** | `openai` | API (requires key) | 1536 (`text-embedding-3-small`) |
 | **Ollama** | `ollama` | Local server | 768 (`nomic-embed-text`) |
+| **Cohere** | `cohere` | API (requires key) | 1024 (`embed-english-v3.0`) |
+| **Voyage AI** | `voyage` | API (requires key) | 1024 (`voyage-2`) |
+| **Nomic** | `nomic` | API (requires key) | 768 (`nomic-embed-text-v1`) |
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
@@ -568,7 +571,7 @@ where `decay = recency(half-life) × frequency × importance`.
 
 **Shipped:** Python MCP server · CLI (22 subcommands) · REST API (`mnema serve`) · web dashboard (`mnema dashboard`) · browser extension · 5 vector backends (Chroma/Qdrant/sqlite-vec/pgvector/LanceDB) · local/OpenAI/Ollama embeddings · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
 
-**In progress (contributors):** Cohere/Voyage/Nomic embeddings · Slack/Discord bot.
+**In progress (contributors):** Slack/Discord bot.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 
