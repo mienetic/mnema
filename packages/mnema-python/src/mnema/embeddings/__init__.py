@@ -43,6 +43,21 @@ def make_embedding(config: MnemaConfig) -> EmbeddingProvider:
 
         return OllamaEmbeddingProvider(config)
 
+    if provider == "cohere":
+        from mnema.embeddings.cohere import CohereEmbeddingProvider
+
+        return CohereEmbeddingProvider(config)
+
+    if provider == "voyage":
+        from mnema.embeddings.voyage import VoyageEmbeddingProvider
+
+        return VoyageEmbeddingProvider(config)
+
+    if provider == "nomic":
+        from mnema.embeddings.nomic import NomicEmbeddingProvider
+
+        return NomicEmbeddingProvider(config)
+
     raise ConfigError(f"Unknown embedding provider: {provider!r}")
 
 

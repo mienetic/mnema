@@ -1,6 +1,6 @@
 # Embedding providers
 
-Mnema converts text to vectors via a pluggable provider. Three ship out of
+Mnema converts text to vectors via a pluggable provider. Six ship out of
 the box; more are welcome (see CONTRIBUTING).
 
 | Provider | Mode | Dim | Needs API key? | Install extra |
@@ -8,6 +8,9 @@ the box; more are welcome (see CONTRIBUTING).
 | **sentence-transformers** (default) | local, offline | 384 | no | `[local]` |
 | **OpenAI** | API | 1536 / 3072 | yes | `[openai]` |
 | **Ollama** | local server | model-dependent (e.g. 768) | no | `[ollama]` |
+| **Cohere** | API | 1024 | yes | `[cohere]` |
+| **Voyage AI** | API | 1024 | yes | `[voyage]` |
+| **Nomic** | API | 768 | yes | `[nomic]` |
 
 ## sentence-transformers (default)
 
@@ -87,6 +90,67 @@ export MNEMA_OLLAMA_URL=http://localhost:11434
 
 Pull the model once with `ollama pull nomic-embed-text`.
 
+## Cohere
+
+Uses [Cohere](https://cohere.com)'s embedding API. The `embed-english-v3.0`
+model is 1024-d and supports the `search_document` input type.
+
+Install with:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="default,cohere" bash
+```
+
+Then configure:
+
+```bash
+export MNEMA_EMBEDDING=cohere
+export MNEMA_EMBEDDING_MODEL=embed-english-v3.0
+export MNEMA_COHERE_API_KEY=...
+```
+
+| Model | Dim |
+|---|---|
+| `embed-english-v3.0` | 1024 |
+| `embed-english-light-v3.0` | 384 |
+| `embed-multilingual-v3.0` | 1024 |
+
+## Voyage AI
+
+Uses the [Voyage AI](https://voyageai.com) embedding API.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="default,voyage" bash
+export MNEMA_EMBEDDING=voyage
+export MNEMA_EMBEDDING_MODEL=voyage-2
+export MNEMA_VOYAGE_API_KEY=...
+```
+
+| Model | Dim |
+|---|---|
+| `voyage-2` | 1024 |
+| `voyage-large-2` | 1536 |
+| `voyage-code-2` | 1536 |
+
+## Nomic
+
+Uses the [Nomic](https://atlas.nomic.ai) embedding API.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install.sh \
+  | MNEMA_EXTRAS="default,nomic" bash
+export MNEMA_EMBEDDING=nomic
+export MNEMA_EMBEDDING_MODEL=nomic-embed-text-v1
+export MNEMA_NOMIC_API_KEY=...
+```
+
+| Model | Dim |
+|---|---|
+| `nomic-embed-text-v1` | 768 |
+| `nomic-embed-text-v1.5` | 768 |
+
 ## Switching embedding models
 
 When you change `MNEMA_EMBEDDING` / `MNEMA_EMBEDDING_MODEL`, existing
@@ -116,9 +180,9 @@ a scope with `--scope`, or tune the batch size with `--batch-size`.
 - **Default to local** for single-user / offline / privacy-sensitive setups.
 - **Use Ollama** if you already run an Ollama server and want to share its
   model cache, or want to avoid loading a model in-process.
-- **Use OpenAI** when you want lower per-request latency under load, or
-  when running in a constrained environment where loading a model is
-  expensive, or when you need top-tier multilingual quality.
+- **Use OpenAI / Cohere / Voyage / Nomic** when you want lower per-request
+  latency under load, or when running in a constrained environment where
+  loading a model is expensive.
 
 ## Adding your own provider
 
