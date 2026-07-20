@@ -8,8 +8,34 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Planned
 - TypeScript MCP server (`packages/mnema-ts/`)
-- Web dashboard for browsing memories
 - Slack / Discord bot
+
+## [0.4.0] — 2026-07-19
+
+### Added
+- **pgvector backend** — Postgres + the `vector` extension, via `asyncpg`
+  with parameterized queries (`$1, $2, ...` + `*params`). Cosine distance
+  via `<=>`. Contributed by [@Adiiiipawar](https://github.com/Adiiiipawar).
+  ([#4](https://github.com/mienetic/mnema/issues/4), [#25](https://github.com/mienetic/mnema/pull/25))
+- **LanceDB backend** — embedded, serverless columnar vector store. Wraps
+  the sync LanceDB API in `anyio.to_thread.run_sync`. Contributed by
+  [@Oneshot1123](https://github.com/Oneshot1123).
+  ([#5](https://github.com/mienetic/mnema/issues/5), [#27](https://github.com/mienetic/mnema/pull/27))
+- **🖥️ Web dashboard** (`mnema dashboard`) — browser UI (htmx + Jinja2) to
+  browse, search, edit, forget memories + trigger decay/summarize. No build
+  step, no JS framework. Contributed by [@NEMEZIZ1234](https://github.com/NEMEZIZ1234).
+  ([#3](https://github.com/mienetic/mnema/issues/3), [#28](https://github.com/mienetic/mnema/pull/28))
+- **MCP registry manifest** (`server.json`) — ready for submission to the
+  official MCP server registry. Contributed by [@Nitjsefnie](https://github.com/Nitjsefnie).
+  ([#21](https://github.com/mienetic/mnema/issues/21), [#26](https://github.com/mienetic/mnema/pull/26))
+
+### Changed
+- README: 7 stale spots fixed (extras list, prompts, backend values, config
+  table, architecture diagram, acknowledgements).
+- CONTRIBUTING.md: synced project layout (5 backends, dashboard/), test count
+  (142), added "How to add a dashboard page" guide, updated open issues.
+- docs/architecture.md, docs/deployment.md, docs/backends.md: all synced
+  with 5 backends + dashboard + REST API.
 
 ## [0.3.0] — 2026-07-18
 
@@ -136,7 +162,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Test suite with in-memory fakes + a backend matrix that runs against
   every supported store.
 
-[Unreleased]: https://github.com/mienetic/mnema/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/mienetic/mnema/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/mienetic/mnema/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mienetic/mnema/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mienetic/mnema/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mienetic/mnema/releases/tag/v0.1.0

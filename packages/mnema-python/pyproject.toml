@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mnema-mcp"
-version = "0.2.0"
+version = "0.4.0"
 description = "Mnema — Long-term memory for AI via MCP × Vector DB. Solves the context-window problem with pluggable vector backends, semantic + hybrid search, decay scoring, and summarization."
 readme = "README.md"
 requires-python = ">=3.10"
