@@ -518,7 +518,7 @@ mnema/
 │   │   │   ├── diagnostics.py   # logging + error reporting
 │   │   │   ├── sdk.py        # programmatic SDK
 │   │   │   └── server.py     # FastMCP bootstrap
-│   │   └── tests/            # 142 tests (unit + backend matrix + eval + dream + diagnostics)
+│   │   └── tests/            # 164 tests (unit + backend matrix + eval + dream + diagnostics)
 │   └── mnema-extension/      # 🧩 browser extension (MV3) — "Remember this" over the REST API
 │       ├── src/              # popup, options, background service worker
 │       └── test/             # 51 JS tests (node:test)
@@ -569,9 +569,9 @@ where `decay = recency(half-life) × frequency × importance`.
 
 ## 🗺️ Roadmap
 
-**Shipped:** Python MCP server · CLI (22 subcommands) · REST API (`mnema serve`) · web dashboard (`mnema dashboard`) · browser extension · 5 vector backends (Chroma/Qdrant/sqlite-vec/pgvector/LanceDB) · local/OpenAI/Ollama embeddings · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
+**Shipped:** Python MCP server · CLI (22 subcommands) · REST API (`mnema serve`) · web dashboard (`mnema dashboard`) · browser extension · 5 vector backends (Chroma/Qdrant/sqlite-vec/pgvector/LanceDB) · 6 embedding providers (local/OpenAI/Ollama/Cohere/Voyage/Nomic) · hybrid search with decay · Auto Dream consolidation · recall eval (100% recall@5) · backup/restore · re-embed migration · friendly error reporting.
 
-**In progress (contributors):** Slack/Discord bot.
+**In progress:** Slack/Discord bot · TypeScript MCP server · auth + multi-tenant.
 
 See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and the [open issues](https://github.com/mienetic/mnema/issues) to pick from.
 

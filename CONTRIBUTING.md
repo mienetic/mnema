@@ -41,7 +41,7 @@ isn't installed, so a minimal install still runs the core + service tests.
 ```
 src/mnema/
 ├── backends/          # vector stores: chroma, qdrant, sqlite_vec, pgvector, lancedb
-├── embeddings/        # embedding providers: sentence_transformers, openai, ollama
+├── embeddings/        # embedding providers: sentence_transformers, openai, ollama, cohere, voyage, nomic
 ├── tools/             # 11 MCP tools, one concern per file
 ├── api/               # REST API (FastAPI) — `mnema serve`
 ├── dashboard/         # web UI (htmx + Jinja2) — `mnema dashboard`
@@ -54,7 +54,7 @@ src/mnema/
 ├── diagnostics.py     # logging + error reporting
 ├── sdk.py             # programmatic Python client
 └── server.py          # FastMCP bootstrap + lifespan
-tests/                 # pytest (142 tests); fakes.py has in-memory backend + hashing embedding
+tests/                 # pytest (164 tests); fakes.py has in-memory backend + hashing embedding
 ```
 
 ## How to add a new vector backend
@@ -274,7 +274,6 @@ Open an issue with:
 Check the [issue tracker](https://github.com/mienetic/mnema/issues) for the
 full list. Look for `good first issue` and `claimed` labels. Highlights:
 
-- **#7** — Cohere / Voyage / Nomic embedding providers
 - **#8** — TypeScript MCP server
 - **#10** — Auth + multi-tenant for HTTP transport
 - **#11** — Observability (Prometheus metrics)
