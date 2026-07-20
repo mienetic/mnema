@@ -17,7 +17,7 @@
 
 - **🔌 MCP-native** — drop it into Claude Desktop, Claude Code, Cursor, Zed, Cline, Continue, Windsurf, ZCode, or any MCP-compatible client.
 - **🗄️ Pluggable vector backends** — ChromaDB (embedded, default), Qdrant (local or remote), sqlite-vec (pure-SQLite), pgvector (Postgres), or LanceDB (embedded columnar).
-- **🧠 Pluggable embeddings** — sentence-transformers (offline, default), OpenAI, or Ollama (local server).
+- **🧠 Pluggable embeddings** — sentence-transformers (offline, default), OpenAI, Ollama, Cohere, Voyage, or Nomic.
 - **🔍 Hybrid search** — combines **semantic similarity** + **tag overlap** + **decay scoring** into a single ranked score.
 - **⏳ Memory decay** — a forgetting curve (`recency × frequency × importance`) so the store stays focused on what matters.
 - **🌙 Auto Dream** — optional background scheduler that consolidates memories while the server is idle (forget decayed + plan summarization), like a brain sleeping.
@@ -29,7 +29,7 @@
 - **🌐 REST API** — `mnema serve` exposes all memory operations over plain HTTP (FastAPI) for non-AI apps.
 - **🖥️ Web dashboard** — `mnema dashboard` opens a browser UI (htmx + Jinja2) to browse, search, edit, forget, and trigger decay/summarize — no AI client needed.
 - **🧩 Browser extension** — select text on any page → right-click "Remember this" → adjust scope/tags → save (Chrome/Edge/Firefox 115+, Manifest V3).
-- **🧪 Well-tested** — 142 Python tests + 51 JS tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
+- **🧪 Well-tested** — 164 Python tests + 51 JS tests across pure-function unit tests + a backend matrix that runs against every supported store. Plus a built-in **recall eval harness** (`mnema eval`) — **recall@5 = 100%, MRR = 1.0** on the bundled dataset.
 
 ---
 
@@ -78,7 +78,7 @@ curl -fsSL https://raw.githubusercontent.com/mienetic/mnema/main/scripts/install
   | MNEMA_EXTRAS=all bash
 ```
 
-Available extras: `chroma`, `qdrant`, `sqlite_vec`, `pgvector`, `lancedb`, `local`, `openai`, `ollama`, `api`, `default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and [docs/embedding-providers.md](docs/embedding-providers.md).
+Available extras: `chroma`, `qdrant`, `sqlite_vec`, `pgvector`, `lancedb`, `local`, `openai`, `ollama`, `cohere`, `voyage`, `nomic`, `api`, `default` (= `chroma,local`), `all`. See [docs/backends.md](docs/backends.md) and [docs/embedding-providers.md](docs/embedding-providers.md).
 
 ### Manual / from source
 
@@ -586,7 +586,7 @@ See **[ROADMAP.md](ROADMAP.md)** for the full prioritized plan (Phase 1–4) and
 - [Model Context Protocol](https://modelcontextprotocol.io) — the protocol that makes this possible.
 - [ChromaDB](https://www.trychroma.com/), [Qdrant](https://qdrant.tech/), [sqlite-vec](https://github.com/asg017/sqlite-vec), [pgvector](https://github.com/pgvector/pgvector), [LanceDB](https://lancedb.github.io/) — excellent open-source vector stores.
 - [sentence-transformers](https://www.sbert.net/) — offline embeddings for everyone.
-- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama provider), [@Nitjsefnie](https://github.com/Nitjsefnie) (REST API + browser extension + Node CI + MCP registry), [@Adiiiipawar](https://github.com/Adiiiipawar) (pgvector), [@Oneshot1123](https://github.com/Oneshot1123) (LanceDB), [@NEMEZIZ1234](https://github.com/NEMEZIZ1234) (web dashboard).
+- **Contributors:** [@faizmullaa](https://github.com/faizmullaa) (Ollama provider), [@Nitjsefnie](https://github.com/Nitjsefnie) (REST API + browser extension + Node CI + MCP registry), [@Adiiiipawar](https://github.com/Adiiiipawar) (pgvector), [@Oneshot1123](https://github.com/Oneshot1123) (LanceDB), [@NEMEZIZ1234](https://github.com/NEMEZIZ1234) (web dashboard), [@jaineel132](https://github.com/jaineel132) (Cohere/Voyage/Nomic embeddings).
 
 ---
 

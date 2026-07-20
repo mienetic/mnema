@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **Cohere, Voyage AI, Nomic embedding providers** — three new hosted
+  embedding providers, each a thin async HTTP client with Bearer auth.
+  Adds `cohere`/`voyage`/`nomic` extras + `MNEMA_COHERE_API_KEY` /
+  `MNEMA_VOYAGE_API_KEY` / `MNEMA_NOMIC_API_KEY` config fields. Contributed
+  by [@jaineel132](https://github.com/jaineel132).
+  ([#7](https://github.com/mienetic/mnema/issues/7), [#29](https://github.com/mienetic/mnema/pull/29))
+
 ### Planned
 - TypeScript MCP server (`packages/mnema-ts/`)
 - Slack / Discord bot

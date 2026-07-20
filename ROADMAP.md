@@ -43,7 +43,7 @@ and stores.
 |---|---|---|
 | ✅ | **pgvector backend** — Postgres + vector extension (asyncpg, parameterized) | done by @Adiiiipawar (#25) |
 | ✅ | **LanceDB backend** — embedded columnar vector store | done by @Oneshot1123 (#27) |
-| 🚧 | More embedding providers: Cohere, Voyage, Nomic | claimed by @jaineel132 |
+| ✅ | More embedding providers: Cohere, Voyage, Nomic | done by @jaineel132 (#29) |
 | ✅ | **Web dashboard** — htmx + Jinja2 UI (`mnema dashboard`) | done by @NEMEZIZ1234 (#28) |
 | ✅ | **REST API (non-MCP)** — `GET /memories`, `POST /search`, … via FastAPI (`mnema serve`) | done by @Nitjsefnie (#22) |
 | ✅ | **Browser extension** — select text → right-click "Remember this" → save (MV3) | done by @Nitjsefnie (#23) |
